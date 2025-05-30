@@ -7,7 +7,11 @@ import {
   Typography, 
   Box,
   Tab,
-  Tabs
+  Tabs,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
 import axios from 'axios';
 
@@ -15,13 +19,22 @@ const Login = () => {
   const [tab, setTab] = useState(0);
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    username: '',
+    password: '',
+    role: ''
   });
   const [error, setError] = useState('');
 
   const handleTabChange = (event, newValue) => {
     setTab(newValue);
     setError('');
+    // Reset form data when switching tabs
+    setFormData({
+      email: '',
+      username: '',
+      password: '',
+      role: ''
+    });
   };
 
   const handleChange = (e) => {
@@ -37,7 +50,11 @@ const Login = () => {
 
     try {
       const endpoint = tab === 0 ? '/api/signin' : '/api/signup';
-      const response = await axios.post(`http://localhost:5000${endpoint}`, formData);
+      const dataToSend = tab === 0 
+        ? { email: formData.email, password: formData.password }
+        : formData;
+      
+      const response = await axios.post(`http://localhost:5000${endpoint}`, dataToSend);
       console.log(response.data);
       // Handle successful login/signup here
     } catch (err) {
@@ -62,6 +79,35 @@ const Login = () => {
           </Tabs>
 
           <form onSubmit={handleSubmit}>
+            {tab === 1 && (
+              <>
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="username"
+                  label="Username"
+                  name="username"
+                  autoComplete="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                />
+                <FormControl fullWidth margin="normal" required>
+                  <InputLabel id="role-label">Role</InputLabel>
+                  <Select
+                    labelId="role-label"
+                    id="role"
+                    name="role"
+                    value={formData.role}
+                    label="Role"
+                    onChange={handleChange}
+                  >
+                    <MenuItem value="guru">Guru</MenuItem>
+                    <MenuItem value="siswa">Siswa</MenuItem>
+                  </Select>
+                </FormControl>
+              </>
+            )}
             <TextField
               margin="normal"
               required
@@ -82,7 +128,7 @@ const Login = () => {
               label="Password"
               type="password"
               id="password"
-              autoComplete="current-password"
+              autoComplete={tab === 0 ? "current-password" : "new-password"}
               value={formData.password}
               onChange={handleChange}
             />
