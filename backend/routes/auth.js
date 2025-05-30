@@ -95,7 +95,7 @@ router.post('/register', async (req, res) => {
       password: hashedPassword,
       role: role || 'siswa',
       enrolledKelas: [],
-      current_level: role === 'siswa' ? 'SMK-1' : undefined
+      current_level: role === 'siswa' ? 'Level 0' : undefined
     });
 
     await user.save();

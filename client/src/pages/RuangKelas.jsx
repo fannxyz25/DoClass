@@ -333,7 +333,7 @@ const RuangKelas = () => {
                 )}
                 <input
                   type="text"
-                  placeholder="Level (contoh: SMK-1)"
+                  placeholder="Level (contoh: Level 0)"
                   className="input mb-2 w-full"
                   value={newUjian.level}
                   onChange={e => setNewUjian({ ...newUjian, level: e.target.value })}

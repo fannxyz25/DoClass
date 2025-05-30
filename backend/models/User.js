@@ -29,7 +29,7 @@ const UserSchema = new Schema({
   }],
   current_level: {
     type: String,
-    default: 'SMK-1'
+    default: 'Level 0'
   },
   createdAt: {
     type: Date,

@@ -17,7 +17,7 @@ const studentRankingSchema = new mongoose.Schema({
     },
     level: {
         type: String,
-        default: 'SMK-1'
+        default: 'Level 0'
     },
     rank: {
         type: Number,
@@ -48,8 +48,9 @@ const studentRankingSchema = new mongoose.Schema({
 // Calculate level based on points
 studentRankingSchema.methods.calculateLevel = function() {
     const points = this.points;
-    // Level up every 250 points
-    const level = Math.floor(points / 250) + 1;
+    if (points === 0) return 'Level 0';
+    // Level up every 250 points, starting from Level 0
+    const level = Math.floor(points / 250);
     return `Level ${level}`;
 };
 

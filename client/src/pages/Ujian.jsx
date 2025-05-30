@@ -49,9 +49,9 @@ function Ujian() {
       setSubmitted(true);
 
       if (finalScore >= 70) {
-        // Update session storage with new score
+        // Update user data in localStorage with new score
         const updatedUser = { ...user };
-        sessionStorage.setItem("user", JSON.stringify(updatedUser));
+        localStorage.setItem("user", JSON.stringify(updatedUser));
         
         setTimeout(() => {
           navigate("/beranda");

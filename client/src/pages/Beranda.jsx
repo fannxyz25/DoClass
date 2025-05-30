@@ -4,18 +4,41 @@ import axios from "axios";
 import { useUser } from "../components/UserContext";
 
 function Beranda() {
-  const { user } = useUser();
+  const { user, updateUser } = useUser();
   const [stats, setStats] = useState({
     totalKelas: 0,
     totalSiswa: 0,
     totalModul: 0
   });
+  const [currentUser, setCurrentUser] = useState(user);
 
   useEffect(() => {
+    const fetchUser = async () => {
+      if (user && user._id) {
+        try {
+          const token = localStorage.getItem('token');
+          const res = await axios.get(`http://localhost:5000/api/users/${user._id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          setCurrentUser(res.data);
+          // Also update the user in the context and local storage
+          updateUser(res.data);
+        } catch (error) {
+          console.error('Error fetching user data for Beranda:', error);
+          // If fetching fails, use the user data from the context
+          setCurrentUser(user);
+        }
+      } else {
+        setCurrentUser(null);
+      }
+    };
+
+    fetchUser();
+
     if (user?.role === "guru") {
       loadGuruStats();
     }
-  }, [user]);
+  }, [user, updateUser]); // Re-fetch if user in context changes
 
   const loadGuruStats = async () => {
     try {
@@ -63,10 +86,12 @@ function Beranda() {
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h1 className="text-3xl font-bold mb-2">
-          Selamat datang, <span className="text-green-700">{user?.name}</span> 👋
+          Selamat datang, <span className="text-green-700">{currentUser?.name}</span> 👋
         </h1>
         <p className="text-gray-600 mb-2">
-          Level kamu saat ini: <span className="font-medium text-indigo-600">{user?.current_level}</span>
+          Level kamu saat ini: <span className="font-medium text-indigo-600">
+            {currentUser?.current_level}
+          </span>
         </p>
         <p className="text-sm text-gray-500">
           Silakan mulai belajar dari modul, dan ikuti ujian jika siap naik kelas.
@@ -90,7 +115,7 @@ function Beranda() {
     <div className="min-h-screen bg-gray-100">
       <Navbar />
       <main className="container mx-auto px-4 py-8">
-        {user?.role === "guru" ? <GuruDashboard /> : <SiswaDashboard />}
+        {currentUser?.role === "guru" ? <GuruDashboard /> : <SiswaDashboard />}
       </main>
     </div>
   );

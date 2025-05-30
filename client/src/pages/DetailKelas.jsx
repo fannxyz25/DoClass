@@ -7,7 +7,7 @@ import { useUser } from '../components/UserContext';
 const DetailKelas = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user, updateUser } = useUser();
   const [kelas, setKelas] = useState(null);
   const [moduls, setModuls] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
@@ -165,6 +165,10 @@ const DetailKelas = () => {
           // Show level up message if it exists
           if (rankingUpdateRes.data.levelUpMessage) {
               alert(rankingUpdateRes.data.levelUpMessage);
+              // Update user level in frontend context and localStorage
+              const updatedUser = { ...user, current_level: rankingUpdateRes.data.ranking.level };
+              updateUser(updatedUser);
+              localStorage.setItem("user", JSON.stringify(updatedUser));
           }
           
           // Show exam result
@@ -356,7 +360,7 @@ const DetailKelas = () => {
                         <div key={ujian._id || idx} className="mb-6 p-4 border rounded bg-gray-50">
                           {(ujian.level || ujian.min_score) && (
                             <div className="font-semibold mb-2 bg-blue-100 text-blue-900 rounded px-2 py-1 inline-block">
-                              {ujian.level && <>Level: {ujian.level}</>} {ujian.level && ujian.min_score && '|'} {ujian.min_score && <>Nilai Minimum: {ujian.min_score}</>}
+                              {ujian.level && <>Level: {ujian.level}</>} {ujian.min_score && <>Nilai Minimum: {ujian.min_score}</>}
                             </div>
                           )}
                           {ujian.soal.map((soal, sIdx) => (
@@ -737,7 +741,7 @@ const DetailKelas = () => {
                   try {
                     await axios.post(`http://localhost:5000/api/kelas/${id}/ujian`, newUjian);
                     setShowUjianModal(false);
-                    setNewUjian({ soal: [{ pertanyaan: '', opsi: ['', '', '', ''], jawaban_benar: '' }], min_score: 70 });
+                    setNewUjian({ level: "", soal: [{ pertanyaan: '', opsi: ['', '', '', ''], jawaban_benar: '' }], min_score: 70 });
                     loadUjianList();
                     alert('Ujian berhasil dibuat!');
                   } catch (err) {
@@ -746,6 +750,17 @@ const DetailKelas = () => {
                 }}
                 className="space-y-4"
               >
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Level Ujian</label>
+                  <input
+                    type="text"
+                    className="input w-full border rounded px-3 py-2 mt-1"
+                    placeholder="Contoh: Level 1"
+                    value={newUjian.level}
+                    onChange={e => setNewUjian({ ...newUjian, level: e.target.value })}
+                    required
+                  />
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Nilai Minimum</label>
                   <input

@@ -30,7 +30,7 @@ router.post('/update-points', auth, async (req, res) => {
             class: classId
         });
 
-        const oldLevel = ranking ? ranking.level : 'SMK-1';
+        const oldLevel = ranking ? ranking.level : 'Level 0';
         let levelUpMessage = null;
 
         if (!ranking) {

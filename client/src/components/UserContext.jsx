@@ -7,10 +7,10 @@ export const UserProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Try to load user data from localStorage on mount
+    // Try to load user data from sessionStorage on mount
     try {
-      const token = localStorage.getItem('token');
-      const savedUser = localStorage.getItem('user');
+      const token = sessionStorage.getItem('token');
+      const savedUser = sessionStorage.getItem('user');
       if (token && savedUser) {
         setUser(JSON.parse(savedUser));
       } else {
@@ -26,13 +26,14 @@ export const UserProvider = ({ children }) => {
   const updateUser = (userData) => {
     try {
       if (userData) {
-        // Save complete user data to localStorage
-        localStorage.setItem('user', JSON.stringify(userData));
-        setUser(userData);
+        // Save complete user data to sessionStorage
+        sessionStorage.setItem('user', JSON.stringify(userData));
+        // Explicitly parse and set user to ensure state reflects sessionStorage
+        setUser(JSON.parse(sessionStorage.getItem('user')));
       } else {
         // Clear user data on logout
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
+        sessionStorage.removeItem('user');
+        sessionStorage.removeItem('token');
         setUser(null);
       }
     } catch (error) {
