@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { 
-  Container, 
   Paper, 
   TextField, 
   Button, 
@@ -11,9 +10,50 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  styled
 } from '@mui/material';
 import axios from 'axios';
+
+// Membuat komponen TextField custom dengan styling rounded
+const RoundedTextField = styled(TextField)({
+  '& .MuiOutlinedInput-root': {
+    borderRadius: '10px',
+    transition: 'all 0.3s ease-in-out',
+    '&:hover': {
+      '& .MuiOutlinedInput-notchedOutline': {
+        borderColor: '#1976d2',
+      },
+    },
+  },
+});
+
+// Membuat komponen Select custom dengan styling rounded
+const RoundedSelect = styled(Select)({
+  borderRadius: '10px',
+  '& .MuiOutlinedInput-notchedOutline': {
+    borderRadius: '10px',
+  },
+});
+
+// Membuat komponen Button custom dengan animasi hover dan warna biru
+const StyledButton = styled(Button)(({ theme }) => ({
+  borderRadius: '10px',
+  padding: '10px 20px',
+  fontSize: '1rem',
+  textTransform: 'none',
+  transition: 'all 0.3s ease-in-out',
+  backgroundColor: '#1976d2',
+  color: 'white',
+  '&:hover': {
+    backgroundColor: '#2196f3',
+    transform: 'scale(1.02)',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  },
+  '&:active': {
+    backgroundColor: '#1565c0',
+  },
+}));
 
 const Login = () => {
   const [tab, setTab] = useState(0);
@@ -63,92 +103,121 @@ const Login = () => {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Box
+      sx={{
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        bgcolor: '#f5f5f5',
+      }}
+    >
       <Box
         sx={{
-          marginTop: 8,
+          width: '45%',
+          height: '100%',
           display: 'flex',
-          flexDirection: 'column',
           alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
-        <Paper elevation={3} sx={{ p: 4, width: '100%' }}>
-          <Tabs value={tab} onChange={handleTabChange} centered sx={{ mb: 3 }}>
-            <Tab label="Sign In" />
-            <Tab label="Sign Up" />
-          </Tabs>
+        <Paper 
+          elevation={3} 
+          sx={{ 
+            width: '90%',
+            height: '90%',
+            borderRadius: '10px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            p: 4,
+            bgcolor: 'white',
+          }}
+        >
+          <Box
+            sx={{
+              width: '100%',
+              maxWidth: '400px',
+              mt: 4,
+            }}
+          >
+            <Tabs value={tab} onChange={handleTabChange} centered sx={{ mb: 3 }}>
+              <Tab label="Sign In" />
+              <Tab label="Sign Up" />
+            </Tabs>
 
-          <form onSubmit={handleSubmit}>
-            {tab === 1 && (
-              <>
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="username"
-                  label="Username"
-                  name="username"
-                  autoComplete="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                />
-                <FormControl fullWidth margin="normal" required>
-                  <InputLabel id="role-label">Role</InputLabel>
-                  <Select
-                    labelId="role-label"
-                    id="role"
-                    name="role"
-                    value={formData.role}
-                    label="Role"
+            <form onSubmit={handleSubmit}>
+              {tab === 1 && (
+                <>
+                  <RoundedTextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="username"
+                    label="Username"
+                    name="username"
+                    autoComplete="username"
+                    value={formData.username}
                     onChange={handleChange}
-                  >
-                    <MenuItem value="guru">Guru</MenuItem>
-                    <MenuItem value="siswa">Siswa</MenuItem>
-                  </Select>
-                </FormControl>
-              </>
-            )}
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-              value={formData.email}
-              onChange={handleChange}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete={tab === 0 ? "current-password" : "new-password"}
-              value={formData.password}
-              onChange={handleChange}
-            />
-            {error && (
-              <Typography color="error" sx={{ mt: 2 }}>
-                {error}
-              </Typography>
-            )}
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              {tab === 0 ? 'Sign In' : 'Sign Up'}
-            </Button>
-          </form>
+                  />
+                  <FormControl fullWidth margin="normal" required>
+                    <InputLabel id="role-label">Role</InputLabel>
+                    <RoundedSelect
+                      labelId="role-label"
+                      id="role"
+                      name="role"
+                      value={formData.role}
+                      label="Role"
+                      onChange={handleChange}
+                    >
+                      <MenuItem value="guru">Guru</MenuItem>
+                      <MenuItem value="siswa">Siswa</MenuItem>
+                    </RoundedSelect>
+                  </FormControl>
+                </>
+              )}
+              <RoundedTextField
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+                autoFocus
+                value={formData.email}
+                onChange={handleChange}
+              />
+              <RoundedTextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete={tab === 0 ? "current-password" : "new-password"}
+                value={formData.password}
+                onChange={handleChange}
+              />
+              {error && (
+                <Typography color="error" sx={{ mt: 2 }}>
+                  {error}
+                </Typography>
+              )}
+              <StyledButton
+                type="submit"
+                fullWidth
+                sx={{ mt: 3, mb: 2 }}
+              >
+                {tab === 0 ? 'Sign In' : 'Sign Up'}
+              </StyledButton>
+            </form>
+          </Box>
         </Paper>
       </Box>
-    </Container>
+    </Box>
   );
 };
 
