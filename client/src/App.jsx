@@ -1,28 +1,19 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './components/Login';
-import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#1976d2',
-    },
-    background: {
-      default: '#f5f5f5',
-    },
-  },
-});
+import LoginForm from './components/LoginForm';
+import GuruKelas from './components/GuruKelas';
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
       <Router>
-        <Routes>
-          <Route path="/" element={<Login />} />
-        </Routes>
+        <div className="w-full flex items-center justify-center">
+          <Routes>
+            <Route path="/" element={<LoginForm />} />
+            <Route path="/guru/kelas" element={<GuruKelas />} />
+          </Routes>
+        </div>
       </Router>
-    </ThemeProvider>
+    </div>
   );
 }
 
