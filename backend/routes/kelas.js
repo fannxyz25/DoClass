@@ -61,13 +61,13 @@ router.get('/enrolled/:userId', async (req, res) => {
 // Create new kelas (for guru)
 router.post('/', async (req, res) => {
   try {
-    const { nama, jurusan, guruId } = req.body;
-    console.log('Creating kelas with data:', { nama, jurusan, guruId });
+    const { nama, guruId } = req.body;
+    console.log('Creating kelas with data:', { nama, guruId });
 
     // Validate input
-    if (!nama || !jurusan || !guruId) {
-      console.log('Missing required fields:', { nama, jurusan, guruId });
-      return res.status(400).json({ message: 'Nama, jurusan, dan guru harus diisi' });
+    if (!nama || !guruId) {
+      console.log('Missing required fields:', { nama, guruId });
+      return res.status(400).json({ message: 'Nama dan guru harus diisi' });
     }
 
     // Check if guru exists
@@ -107,7 +107,6 @@ router.post('/', async (req, res) => {
     const kelas = new Kelas({
       kode,
       nama: nama.trim(),
-      jurusan: jurusan.trim(),
       guru: guruId,
       enrolledStudents: []
     });

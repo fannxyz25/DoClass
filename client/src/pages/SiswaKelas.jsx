@@ -9,7 +9,6 @@ const SiswaKelas = () => {
   const { user } = useUser();
   const [kelas, setKelas] = useState([]);
   const [enrolledKelas, setEnrolledKelas] = useState([]);
-  const [showEnrolled, setShowEnrolled] = useState(false);
   const [loading, setLoading] = useState(true);
   const [joinByCode, setJoinByCode] = useState("");
   const [showJoinModal, setShowJoinModal] = useState(false);
@@ -87,6 +86,8 @@ const SiswaKelas = () => {
         await loadEnrolledKelas();
         setShowJoinModal(false);
         setJoinByCode("");
+        alert("Berhasil bergabung ke kelas!");
+        handleAccessRoom(response.data.kelas._id);
       }
     } catch (error) {
       console.error("Error joining class:", error);
@@ -147,22 +148,11 @@ const SiswaKelas = () => {
               </button>
               <div className="flex space-x-4">
                 <button
-                  onClick={() => setShowEnrolled(false)}
+                  onClick={() => {}}
                   className={`px-6 py-2.5 rounded-lg font-medium shadow-sm transition-colors ${
-                    !showEnrolled
-                      ? "bg-blue-600 text-white hover:bg-blue-700"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                     "bg-blue-600 text-white hover:bg-blue-700"
                   }`}
-                >
-                  Semua Kelas
-                </button>
-                <button
-                  onClick={() => setShowEnrolled(true)}
-                  className={`px-6 py-2.5 rounded-lg font-medium shadow-sm transition-colors ${
-                    showEnrolled
-                      ? "bg-blue-600 text-white hover:bg-blue-700"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
+                   disabled={true}
                 >
                   Kelas Saya
                 </button>
@@ -206,7 +196,7 @@ const SiswaKelas = () => {
 
           {/* Daftar Kelas */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {(showEnrolled ? enrolledKelas : kelas).map((item) => (
+            {enrolledKelas.map((item) => (
               <div key={item._id} className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
                 <div className="flex items-start justify-between">
                   <div>
@@ -230,53 +220,29 @@ const SiswaKelas = () => {
                   )}
                 </div>
                 <div className="mt-6 flex justify-end">
-                  {showEnrolled ? (
-                    <button
-                      onClick={() => handleAccessRoom(item._id)}
-                      className="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                    >
-                      Masuk Kelas
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleJoinKelas(item.kode)}
-                      className={`px-6 py-2.5 rounded-lg font-medium transition-colors ${
-                        item.enrolled
-                          ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                          : "bg-emerald-600 text-white hover:bg-emerald-700"
-                      }`}
-                      disabled={item.enrolled}
-                    >
-                      {item.enrolled ? "Sudah Terdaftar" : "Gabung Kelas"}
-                    </button>
-                  )}
+                  <button
+                    onClick={() => handleAccessRoom(item._id)}
+                    className="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  >
+                    Masuk Kelas
+                  </button>
                 </div>
               </div>
             ))}
           </div>
 
           {/* Empty State */}
-          {((showEnrolled && enrolledKelas.length === 0) || (!showEnrolled && kelas.length === 0)) && (
+          {enrolledKelas.length === 0 && (
             <div className="text-center py-16 bg-gray-50 rounded-xl">
               <div className="text-gray-400 text-6xl mb-4">
-                {showEnrolled ? "📚" : "🎓"}
+                📚
               </div>
               <h3 className="text-2xl font-semibold text-gray-800 mb-3">
-                {showEnrolled ? "Belum Ada Kelas" : "Tidak Ada Kelas Tersedia"}
+                Belum Ada Kelas
               </h3>
               <p className="text-gray-600 text-lg mb-6">
-                {showEnrolled
-                  ? "Anda belum bergabung dengan kelas apapun. Silakan gabung ke kelas terlebih dahulu."
-                  : "Tidak ada kelas yang tersedia saat ini."}
+                Anda belum bergabung dengan kelas apapun. Silakan gabung ke kelas terlebih dahulu.
               </p>
-              {showEnrolled && (
-                <button
-                  onClick={() => setShowEnrolled(false)}
-                  className="text-blue-600 hover:text-blue-800 font-medium text-lg"
-                >
-                  Lihat Semua Kelas
-                </button>
-              )}
             </div>
           )}
         </div>

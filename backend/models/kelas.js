@@ -15,7 +15,6 @@ const KelasSchema = new Schema({
   },
   jurusan: {
     type: String,
-    required: [true, 'Jurusan harus diisi']
   },
   guru: {
     type: Schema.Types.ObjectId,

@@ -12,7 +12,7 @@ const GuruKelas = () => {
   const { user } = useUser();
   const [kelas, setKelas] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newKelas, setNewKelas] = useState({ nama: "", jurusan: "" });
+  const [newKelas, setNewKelas] = useState({ nama: "" });
   const [showModulModal, setShowModulModal] = useState(false);
   const [newModul, setNewModul] = useState({ judul: "", isi: "", kelasId: "", file: null });
   const [showUjianModal, setShowUjianModal] = useState(false);
@@ -67,10 +67,6 @@ const GuruKelas = () => {
         alert("Nama kelas harus diisi!");
         return;
       }
-      if (!newKelas.jurusan?.trim()) {
-        alert("Jurusan harus diisi!");
-        return;
-      }
 
       // Validasi user
       if (!user?._id) {
@@ -98,7 +94,7 @@ const GuruKelas = () => {
         alert(res.data.message);
         setShowCreateModal(false);
         await loadKelas(); // Reload daftar kelas
-        setNewKelas({ nama: "", jurusan: "" });
+        setNewKelas({ nama: "" });
       }
     } catch (error) {
       console.error('Error creating kelas:', {
@@ -225,9 +221,6 @@ const GuruKelas = () => {
                     <span className="font-medium">Kode:</span> {item.kode}
                   </p>
                   <p className="text-gray-600">
-                    <span className="font-medium">Jurusan:</span> {item.jurusan}
-                  </p>
-                  <p className="text-gray-600">
                     <span className="font-medium">Siswa:</span> {item.enrolledStudents?.length || 0} orang
                   </p>
                   <p className="text-gray-600">
@@ -265,14 +258,6 @@ const GuruKelas = () => {
                   className="input mb-2 w-full"
                   value={newKelas.nama}
                   onChange={(e) => setNewKelas({ ...newKelas, nama: e.target.value.trim() })}
-                  disabled={isLoading}
-                />
-                <input
-                  type="text"
-                  placeholder="Jurusan"
-                  className="input mb-4 w-full"
-                  value={newKelas.jurusan}
-                  onChange={(e) => setNewKelas({ ...newKelas, jurusan: e.target.value.trim() })}
                   disabled={isLoading}
                 />
                 <div className="flex justify-end space-x-2">
