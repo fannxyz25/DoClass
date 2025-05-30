@@ -305,7 +305,7 @@ const DetailKelas = () => {
               className={`px-4 py-2 ${
                 activeTab === 'modul'
                   ? 'border-b-2 border-blue-500 text-blue-600'
-                  : 'text-gray-600'
+                  : 'bg-white text-black'
               }`}
               onClick={() => setActiveTab('modul')}
             >
@@ -315,7 +315,7 @@ const DetailKelas = () => {
               className={`px-4 py-2 ${
                 activeTab === 'announcement'
                   ? 'border-b-2 border-blue-500 text-blue-600'
-                  : 'text-gray-600'
+                  : 'bg-white text-black'
               }`}
               onClick={() => setActiveTab('announcement')}
             >
@@ -326,7 +326,7 @@ const DetailKelas = () => {
                 className={`px-4 py-2 ${
                   activeTab === 'progress'
                     ? 'border-b-2 border-blue-500 text-blue-600'
-                    : 'text-gray-600'
+                    : 'bg-white text-black'
                 }`}
                 onClick={() => setActiveTab('progress')}
               >
@@ -337,7 +337,7 @@ const DetailKelas = () => {
               className={`px-4 py-2 ${
                 activeTab === 'ujian'
                   ? 'border-b-2 border-blue-500 text-blue-600'
-                  : 'text-gray-600'
+                  : 'bg-white text-black'
               }`}
               onClick={() => setActiveTab('ujian')}
             >

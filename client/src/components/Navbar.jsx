@@ -44,14 +44,15 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-gray-800 text-white">
+    <nav className="text-white">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-4">
             <Link to="/beranda" className="text-xl font-bold">
               DoClass
             </Link>
-            <Link
+            {/* Removed navigation links as requested */}
+            {/* <Link
               to={getKelasRoute()}
               className="hover:text-gray-300 transition-colors"
             >
@@ -65,7 +66,7 @@ const Navbar = () => {
             </Link>
             <Link to="/ranking" className="hover:text-gray-300 transition-colors">
               Peringkat
-            </Link>
+            </Link> */}
           </div>
           <div className="flex items-center space-x-4">
             <span className="text-sm">
