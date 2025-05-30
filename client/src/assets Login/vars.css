@@ -1,0 +1,23 @@
+/* Figma Styles of your File */
+:root {
+  /* Colors */
+  --biru: linear-gradient(
+    180deg,
+    rgba(216, 237, 255, 1) 0%,
+    rgba(0, 138, 248, 1) 100%
+  );
+  --linear: linear-gradient(
+    180deg,
+    rgba(216, 237, 255, 1) 0%,
+    rgba(0, 138, 248, 1) 100%
+  );
+  --background: linear-gradient(
+    180deg,
+    rgba(53, 161, 247, 1) 12.5%,
+    rgba(0, 138, 248, 1) 100%
+  );
+
+  /* Fonts */
+  /* Effects */
+}
+/* Figma Color Variables of your File */

@@ -4,12 +4,15 @@ import Logo from '../assets/Logo.png';
 import { useUser } from './UserContext';
 import axios from 'axios';
 
-const LoginForm = () => {
+const RegisterForm = () => {
   const navigate = useNavigate();
   const { updateUser } = useUser();
   const [formData, setFormData] = useState({
+    username: '',
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: '',
+    role: 'siswa' // Default role
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -19,14 +22,22 @@ const LoginForm = () => {
     setIsLoading(true);
     setError('');
 
+    if (formData.password !== formData.confirmPassword) {
+      setError('Password tidak cocok');
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
+      const response = await axios.post('http://localhost:5000/api/auth/register', {
+        username: formData.username,
         email: formData.email,
-        password: formData.password
+        password: formData.password,
+        role: formData.role
       });
-      
+
       const { message, user, token } = response.data;
-      
+
       if (user && user._id) {
         localStorage.setItem('token', token);
         
@@ -38,12 +49,11 @@ const LoginForm = () => {
           enrolledKelas: user.enrolledKelas || [],
           current_level: user.current_level
         };
-        
+
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         updateUser(userData);
-        
+
         const userRole = userData.role.toLowerCase();
-        
         if (userRole === 'guru') {
           navigate('/guru/kelas');
         } else if (userRole === 'siswa') {
@@ -51,12 +61,10 @@ const LoginForm = () => {
         } else {
           navigate('/beranda');
         }
-      } else {
-        setError('Login gagal - data pengguna tidak valid');
       }
     } catch (err) {
       if (err.response) {
-        setError(err.response.data.message || 'Login gagal. Mohon cek kembali email dan password Anda.');
+        setError(err.response.data.message || 'Registrasi gagal. Silakan coba lagi.');
       } else if (err.request) {
         setError('Tidak ada respon dari server. Mohon cek koneksi Anda.');
       } else {
@@ -78,18 +86,62 @@ const LoginForm = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#81C4FA] via-[#358BD0] to-[#2D71A7] flex items-center justify-center p-4">
       <div className="w-full max-w-[1256px] h-auto md:h-[833px] flex flex-col md:flex-row rounded-[40px] overflow-hidden relative shadow-2xl">
-        {/* Left Side - Login Form */}
+        {/* Left Side - Welcome Message */}
+        <div className="w-full md:w-1/2 bg-gradient-to-br from-[#81C4FA] to-[#358BD0] flex flex-col items-center justify-center text-center p-8 md:p-16">
+          <div className="mb-8">
+            <svg className="w-20 h-20 text-white mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+            <h1 className="text-[32px] font-bold text-white mb-4">Selamat Datang!</h1>
+            <p className="text-xl text-white opacity-90 mb-12">
+              Sudah punya akun?<br />
+              Silakan masuk
+            </p>
+          </div>
+          <button
+            onClick={() => navigate('/login')}
+            className="bg-white text-[#0984E3] px-8 py-4 rounded-full flex items-center justify-center gap-2 hover:bg-opacity-90 transition-all transform hover:scale-[1.02] shadow-lg"
+          >
+            Masuk
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Right Side - Register Form */}
         <div className="w-full md:w-1/2 bg-white p-8 md:p-16 flex flex-col">
           <div className="flex items-center gap-4 mb-8">
             <div className="w-12 h-12 bg-[#0984E3] rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
               </svg>
             </div>
-            <h2 className="text-[32px] font-bold text-[#2D71A7]">MASUK</h2>
+            <h2 className="text-[32px] font-bold text-[#2D71A7]">DAFTAR</h2>
           </div>
-          
+
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">Username</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  className="w-full h-[50px] pl-10 pr-4 rounded-[20px] bg-[#F0F7FF] border border-[#81C4FA] focus:outline-none focus:ring-2 focus:ring-[#0984E3] focus:border-transparent transition-all"
+                  required
+                  disabled={isLoading}
+                  placeholder="Masukkan username Anda"
+                />
+              </div>
+            </div>
+
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">Email</label>
               <div className="relative">
@@ -132,6 +184,54 @@ const LoginForm = () => {
               </div>
             </div>
 
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">Konfirmasi Password</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="w-full h-[50px] pl-10 pr-4 rounded-[20px] bg-[#F0F7FF] border border-[#81C4FA] focus:outline-none focus:ring-2 focus:ring-[#0984E3] focus:border-transparent transition-all"
+                  required
+                  disabled={isLoading}
+                  placeholder="Konfirmasi password Anda"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">Daftar Sebagai</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <select
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  className="w-full h-[50px] pl-10 pr-4 rounded-[20px] bg-[#F0F7FF] border border-[#81C4FA] focus:outline-none focus:ring-2 focus:ring-[#0984E3] focus:border-transparent transition-all appearance-none"
+                  required
+                  disabled={isLoading}
+                >
+                  <option value="siswa">Siswa</option>
+                  <option value="guru">Guru</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
             <div className="pt-6">
               <button
                 type="submit"
@@ -148,7 +248,7 @@ const LoginForm = () => {
                   </div>
                 ) : (
                   <>
-                    Masuk
+                    Daftar
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
@@ -168,29 +268,6 @@ const LoginForm = () => {
           )}
         </div>
 
-        {/* Right Side - Welcome Message */}
-        <div className="w-full md:w-1/2 bg-gradient-to-br from-[#81C4FA] to-[#358BD0] flex flex-col items-center justify-center text-center p-8 md:p-16">
-          <div className="mb-8">
-            <svg className="w-20 h-20 text-white mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-            <h1 className="text-[32px] font-bold text-white mb-4">Halo, Teman Belajar!</h1>
-            <p className="text-xl text-white opacity-90 mb-12">
-              Belum punya akun?<br />
-              Mari bergabung bersama kami
-            </p>
-          </div>
-          <button
-            onClick={() => navigate('/register')}
-            className="bg-white text-[#0984E3] px-8 py-4 rounded-full flex items-center justify-center gap-2 hover:bg-opacity-90 transition-all transform hover:scale-[1.02] shadow-lg"
-          >
-            Daftar Sekarang
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </button>
-        </div>
-
         {/* Center Logo */}
         <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[120px] h-[120px] bg-white rounded-full p-4 shadow-xl flex items-center justify-center">
           <img src={Logo} alt="Logo" className="w-full h-full object-contain" />
@@ -200,4 +277,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default RegisterForm; 
