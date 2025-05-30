@@ -1,61 +1,90 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useState } from 'react';
-import LoginForm from './components/LoginForm';
-import TeacherDashboard from './components/TeacherDashboard';
-import StudentDashboard from './components/StudentDashboard';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import Login from './pages/login' 
+import Register from './pages/register'
+import GuruKelas from "./pages/GuruKelas";
+import SiswaKelas from "./pages/SiswaKelas";
+import DetailKelas from "./pages/DetailKelas";
+import Beranda from './pages/beranda'
+import Modul from './pages/modul'
+// import TambahModul from './pages/TambahModul'
+import Ujian from './pages/Ujian'
+import ProtectedRoute from './components/ProtectedRoute'
+import { UserProvider } from './components/UserContext'
 
 function App() {
-  const [user, setUser] = useState(null);
-
-  const handleLogin = (userData) => {
-    setUser(userData);
-  };
-
-  const handleLogout = () => {
-    setUser(null);
-  };
-
   return (
-    <div className="min-h-screen w-full">
+    <UserProvider>
       <Router>
         <Routes>
-          <Route
-            path="/"
+          {/* Public Routes */}
+          <Route path="/" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          {/* Protected Guru Routes */}
+          <Route 
+            path="/guru/kelas" 
             element={
-              user ? (
-                <Navigate
-                  to={user.level === 'guru' ? '/teacher' : '/student'}
-                  replace
-                />
-              ) : (
-                <LoginForm onLogin={handleLogin} />
-              )
-            }
+              <ProtectedRoute allowedRoles={['guru']}>
+                <GuruKelas />
+              </ProtectedRoute>
+            } 
           />
-          <Route
-            path="/teacher"
+          <Route 
+            path="/guru/kelas/:id" 
             element={
-              user?.level === 'guru' ? (
-                <TeacherDashboard onLogout={handleLogout} />
-              ) : (
-                <Navigate to="/" replace />
-              )
-            }
+              <ProtectedRoute allowedRoles={['guru']}>
+                <DetailKelas />
+              </ProtectedRoute>
+            } 
           />
-          <Route
-            path="/student"
+
+          {/* Protected Siswa Routes */}
+          <Route 
+            path="/kelas" 
             element={
-              user?.level === 'siswa' ? (
-                <StudentDashboard onLogout={handleLogout} />
-              ) : (
-                <Navigate to="/" replace />
-              )
-            }
+              <ProtectedRoute allowedRoles={['siswa']}>
+                <SiswaKelas />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/kelas/:id" 
+            element={
+              <ProtectedRoute allowedRoles={['siswa']}>
+                <DetailKelas />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* Protected Routes for Both Roles */}
+          <Route 
+            path="/beranda" 
+            element={
+              <ProtectedRoute allowedRoles={['guru', 'siswa']}>
+                <Beranda />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/modul" 
+            element={
+              <ProtectedRoute allowedRoles={['guru', 'siswa']}>
+                <Modul />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/ujian" 
+            element={
+              <ProtectedRoute allowedRoles={['guru', 'siswa']}>
+                <Ujian />
+              </ProtectedRoute>
+            } 
           />
         </Routes>
       </Router>
-    </div>
-  );
+    </UserProvider>
+  )
 }
 
-export default App;
+export default App
