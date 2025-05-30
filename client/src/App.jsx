@@ -1,28 +1,56 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './components/Login';
-import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#1976d2',
-    },
-    background: {
-      default: '#f5f5f5',
-    },
-  },
-});
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useState } from 'react';
+import LoginForm from './components/LoginForm';
+import TeacherDashboard from './components/TeacherDashboard';
+import StudentDashboard from './components/StudentDashboard';
 
 function App() {
+  const [user, setUser] = useState(null);
+
+  const handleLogin = (userData) => {
+    setUser(userData);
+  };
+
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <div className="min-h-screen w-full">
       <Router>
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route
+            path="/"
+            element={
+              user ? (
+                <Navigate
+                  to={user.type === 'teacher' ? '/teacher' : '/student'}
+                  replace
+                />
+              ) : (
+                <LoginForm onLogin={handleLogin} />
+              )
+            }
+          />
+          <Route
+            path="/teacher"
+            element={
+              user?.type === 'teacher' ? (
+                <TeacherDashboard />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            }
+          />
+          <Route
+            path="/student"
+            element={
+              user?.type === 'student' ? (
+                <StudentDashboard />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            }
+          />
         </Routes>
       </Router>
-    </ThemeProvider>
+    </div>
   );
 }
 

@@ -1,80 +1,17 @@
 import React, { useState } from 'react';
-import { 
-  Paper, 
-  TextField, 
-  Button, 
-  Typography, 
-  Box,
-  Tab,
-  Tabs,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  styled
-} from '@mui/material';
 import axios from 'axios';
-
-// Membuat komponen TextField custom dengan styling rounded
-const RoundedTextField = styled(TextField)({
-  '& .MuiOutlinedInput-root': {
-    borderRadius: '10px',
-    transition: 'all 0.3s ease-in-out',
-    '&:hover': {
-      '& .MuiOutlinedInput-notchedOutline': {
-        borderColor: '#1976d2',
-      },
-    },
-  },
-});
-
-// Membuat komponen Select custom dengan styling rounded
-const RoundedSelect = styled(Select)({
-  borderRadius: '10px',
-  '& .MuiOutlinedInput-notchedOutline': {
-    borderRadius: '10px',
-  },
-});
-
-// Membuat komponen Button custom dengan animasi hover dan warna biru
-const StyledButton = styled(Button)(({ theme }) => ({
-  borderRadius: '10px',
-  padding: '10px 20px',
-  fontSize: '1rem',
-  textTransform: 'none',
-  transition: 'all 0.3s ease-in-out',
-  backgroundColor: '#1976d2',
-  color: 'white',
-  '&:hover': {
-    backgroundColor: '#2196f3',
-    transform: 'scale(1.02)',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-  },
-  '&:active': {
-    backgroundColor: '#1565c0',
-  },
-}));
 
 const Login = () => {
   const [tab, setTab] = useState(0);
   const [formData, setFormData] = useState({
     email: '',
-    username: '',
-    password: '',
-    role: ''
+    password: ''
   });
   const [error, setError] = useState('');
 
-  const handleTabChange = (event, newValue) => {
+  const handleTabChange = (newValue) => {
     setTab(newValue);
     setError('');
-    // Reset form data when switching tabs
-    setFormData({
-      email: '',
-      username: '',
-      password: '',
-      role: ''
-    });
   };
 
   const handleChange = (e) => {
@@ -90,11 +27,7 @@ const Login = () => {
 
     try {
       const endpoint = tab === 0 ? '/api/signin' : '/api/signup';
-      const dataToSend = tab === 0 
-        ? { email: formData.email, password: formData.password }
-        : formData;
-      
-      const response = await axios.post(`http://localhost:5000${endpoint}`, dataToSend);
+      const response = await axios.post(`http://localhost:5000${endpoint}`, formData);
       console.log(response.data);
       // Handle successful login/signup here
     } catch (err) {
@@ -103,121 +36,92 @@ const Login = () => {
   };
 
   return (
-    <Box
-      sx={{
-        width: '100vw',
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        bgcolor: '#f5f5f5',
-      }}
-    >
-      <Box
-        sx={{
-          width: '45%',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Paper 
-          elevation={3} 
-          sx={{ 
-            width: '90%',
-            height: '90%',
-            borderRadius: '10px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            p: 4,
-            bgcolor: 'white',
-          }}
-        >
-          <Box
-            sx={{
-              width: '100%',
-              maxWidth: '400px',
-              mt: 4,
-            }}
-          >
-            <Tabs value={tab} onChange={handleTabChange} centered sx={{ mb: 3 }}>
-              <Tab label="Sign In" />
-              <Tab label="Sign Up" />
-            </Tabs>
+    <div className="flex items-center justify-center w-full">
+      <div className="w-full max-w-md px-4">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div className="px-8 pt-8 pb-6">
+            <div className="text-center">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+                {tab === 0 ? 'Welcome back' : 'Create account'}
+              </h2>
+              <p className="text-sm text-gray-500">
+                {tab === 0 ? 'Please sign in to continue' : 'Please fill in your details'}
+              </p>
+            </div>
 
-            <form onSubmit={handleSubmit}>
-              {tab === 1 && (
-                <>
-                  <RoundedTextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="username"
-                    label="Username"
-                    name="username"
-                    autoComplete="username"
-                    value={formData.username}
-                    onChange={handleChange}
-                  />
-                  <FormControl fullWidth margin="normal" required>
-                    <InputLabel id="role-label">Role</InputLabel>
-                    <RoundedSelect
-                      labelId="role-label"
-                      id="role"
-                      name="role"
-                      value={formData.role}
-                      label="Role"
-                      onChange={handleChange}
-                    >
-                      <MenuItem value="guru">Guru</MenuItem>
-                      <MenuItem value="siswa">Siswa</MenuItem>
-                    </RoundedSelect>
-                  </FormControl>
-                </>
-              )}
-              <RoundedTextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                autoFocus
-                value={formData.email}
-                onChange={handleChange}
-              />
-              <RoundedTextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete={tab === 0 ? "current-password" : "new-password"}
-                value={formData.password}
-                onChange={handleChange}
-              />
+            <div className="mt-8 flex border-b border-gray-200">
+              <button
+                className={`flex-1 py-3 text-sm font-medium transition-colors duration-200 ${
+                  tab === 0
+                    ? 'text-blue-600 border-b-2 border-blue-600'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+                onClick={() => handleTabChange(0)}
+              >
+                Sign In
+              </button>
+              <button
+                className={`flex-1 py-3 text-sm font-medium transition-colors duration-200 ${
+                  tab === 1
+                    ? 'text-blue-600 border-b-2 border-blue-600'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+                onClick={() => handleTabChange(1)}
+              >
+                Sign Up
+              </button>
+            </div>
+
+            <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                  Email address
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                  placeholder="Enter your password"
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+              </div>
+
               {error && (
-                <Typography color="error" sx={{ mt: 2 }}>
+                <div className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">
                   {error}
-                </Typography>
+                </div>
               )}
-              <StyledButton
+
+              <button
                 type="submit"
-                fullWidth
-                sx={{ mt: 3, mb: 2 }}
+                className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 {tab === 0 ? 'Sign In' : 'Sign Up'}
-              </StyledButton>
+              </button>
             </form>
-          </Box>
-        </Paper>
-      </Box>
-    </Box>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
