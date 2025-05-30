@@ -1,17 +1,54 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useState } from 'react';
 import LoginForm from './components/LoginForm';
-import GuruKelas from './components/GuruKelas';
+import TeacherDashboard from './components/TeacherDashboard';
+import StudentDashboard from './components/StudentDashboard';
 
 function App() {
+  const [user, setUser] = useState(null);
+
+  const handleLogin = (userData) => {
+    setUser(userData);
+  };
+
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen w-full">
       <Router>
-        <div className="w-full flex items-center justify-center">
-          <Routes>
-            <Route path="/" element={<LoginForm />} />
-            <Route path="/guru/kelas" element={<GuruKelas />} />
-          </Routes>
-        </div>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              user ? (
+                <Navigate
+                  to={user.type === 'teacher' ? '/teacher' : '/student'}
+                  replace
+                />
+              ) : (
+                <LoginForm onLogin={handleLogin} />
+              )
+            }
+          />
+          <Route
+            path="/teacher"
+            element={
+              user?.type === 'teacher' ? (
+                <TeacherDashboard />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            }
+          />
+          <Route
+            path="/student"
+            element={
+              user?.type === 'student' ? (
+                <StudentDashboard />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            }
+          />
+        </Routes>
       </Router>
     </div>
   );

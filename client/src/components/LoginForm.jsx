@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const LoginForm = () => {
+const LoginForm = ({ onLogin }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [userType, setUserType] = useState('student');
   const [formData, setFormData] = useState({
@@ -19,8 +19,21 @@ const LoginForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log(formData);
+    
+    if (!isLogin && formData.password !== formData.confirmPassword) {
+      alert('Passwords do not match!');
+      return;
+    }
+
+    // Here you would typically make an API call to authenticate/register
+    // For now, we'll simulate a successful login/registration
+    const userData = {
+      type: userType,
+      email: formData.email,
+      name: formData.name || 'User'
+    };
+
+    onLogin(userData);
   };
 
   return (
