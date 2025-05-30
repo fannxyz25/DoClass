@@ -40,6 +40,11 @@ const DetailKelas = () => {
   const [newAnnouncement, setNewAnnouncement] = useState({ judul: '', isi: '' });
   const [broadcastAll, setBroadcastAll] = useState(false);
 
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetOption, setResetOption] = useState('all');
+  const [selectedUjianId, setSelectedUjianId] = useState('');
+  const [isResetting, setIsResetting] = useState(false);
+
   useEffect(() => {
     loadKelasDetail();
     loadUjianList();
@@ -179,6 +184,26 @@ const DetailKelas = () => {
       loadKelasDetail(); // Refresh data kelas
     } catch (error) {
       alert('Gagal mengubah level siswa');
+    }
+  };
+
+  const handleResetNilaiSiswa = async () => {
+    setIsResetting(true);
+    try {
+      if (resetOption === 'all') {
+        await axios.delete(`http://localhost:5000/api/kelas/${id}/ujian/hasil`);
+      } else if (resetOption === 'ujian' && selectedUjianId) {
+        await axios.delete(`http://localhost:5000/api/kelas/${id}/ujian/${selectedUjianId}/hasil`);
+      }
+      setShowResetModal(false);
+      setSelectedUjianId('');
+      setResetOption('all');
+      loadHasilUjian();
+      alert('Nilai siswa berhasil dihapus!');
+    } catch (error) {
+      alert('Gagal menghapus nilai siswa');
+    } finally {
+      setIsResetting(false);
     }
   };
 
@@ -345,6 +370,79 @@ const DetailKelas = () => {
                     >
                       {showHasilUjian ? 'Sembunyikan Nilai Siswa' : 'Lihat Nilai Siswa'}
                     </button>
+                    <button
+                      className="mb-4 ml-2 px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white font-semibold"
+                      onClick={() => setShowResetModal(true)}
+                    >
+                      Reset/Hapus Nilai Siswa
+                    </button>
+                    {showResetModal && (
+                      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+                        <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl">
+                          <h2 className="text-xl font-bold mb-4 text-gray-800">Reset/Hapus Nilai Siswa</h2>
+                          <div className="mb-4">
+                            <label className="block mb-2 font-medium text-gray-800">Pilih Opsi:</label>
+                            <div className="space-y-2">
+                              <label className="flex items-center">
+                                <input
+                                  type="radio"
+                                  name="resetOption"
+                                  value="all"
+                                  checked={resetOption === 'all'}
+                                  onChange={() => setResetOption('all')}
+                                  className="mr-2"
+                                />
+                                <span className="text-gray-900">Hapus semua nilai siswa untuk semua ujian di kelas ini</span>
+                              </label>
+                              <label className="flex items-center">
+                                <input
+                                  type="radio"
+                                  name="resetOption"
+                                  value="ujian"
+                                  checked={resetOption === 'ujian'}
+                                  onChange={() => setResetOption('ujian')}
+                                  className="mr-2"
+                                />
+                                <span className="text-gray-900">Hapus nilai siswa untuk ujian tertentu saja</span>
+                              </label>
+                            </div>
+                          </div>
+                          {resetOption === 'ujian' && (
+                            <div className="mb-4">
+                              <label className="block mb-2 font-medium text-gray-800">Pilih Ujian:</label>
+                              <select
+                                className="w-full border rounded px-3 py-2"
+                                value={selectedUjianId}
+                                onChange={e => setSelectedUjianId(e.target.value)}
+                              >
+                                <option value="">-- Pilih Ujian --</option>
+                                {ujianList.map((ujian) => (
+                                  <option key={ujian._id} value={ujian._id}>
+                                    {ujian.level ? `Level: ${ujian.level}` : ''} {ujian.soal[0]?.pertanyaan ? `- ${ujian.soal[0].pertanyaan.substring(0, 30)}...` : ''}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+                          <div className="flex justify-end space-x-3 mt-6">
+                            <button
+                              className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
+                              onClick={() => setShowResetModal(false)}
+                              disabled={isResetting}
+                            >
+                              Batal
+                            </button>
+                            <button
+                              className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 font-semibold"
+                              onClick={handleResetNilaiSiswa}
+                              disabled={isResetting || (resetOption === 'ujian' && !selectedUjianId)}
+                            >
+                              {isResetting ? 'Menghapus...' : 'Hapus Nilai'}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     {showHasilUjian && hasilUjian.length > 0 && (
                       <div className="overflow-x-auto">
                         <h3 className="text-lg font-bold mb-2">Hasil Ujian Siswa</h3>

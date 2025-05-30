@@ -298,4 +298,49 @@ router.get('/:id/ujian/hasil', async (req, res) => {
   }
 });
 
+// Endpoint untuk menghapus semua hasil ujian di kelas
+router.delete('/:id/ujian/hasil', async (req, res) => {
+  try {
+    const kelas = await Kelas.findById(req.params.id);
+    if (!kelas) return res.status(404).json({ message: 'Kelas tidak ditemukan' });
+    // Simpan histori sebelum reset
+    if (kelas.hasilUjian && kelas.hasilUjian.length > 0) {
+      kelas.historiHasilUjian = kelas.historiHasilUjian || [];
+      kelas.historiHasilUjian.push({
+        ujian: null,
+        hasil: [...kelas.hasilUjian],
+        resetAt: new Date()
+      });
+    }
+    kelas.hasilUjian = [];
+    await kelas.save();
+    res.json({ message: 'Semua hasil ujian di kelas ini berhasil dihapus.' });
+  } catch (err) {
+    res.status(500).json({ message: 'Gagal menghapus hasil ujian.' });
+  }
+});
+
+// Endpoint untuk menghapus hasil ujian siswa untuk ujian tertentu
+router.delete('/:id/ujian/:ujianId/hasil', async (req, res) => {
+  try {
+    const kelas = await Kelas.findById(req.params.id);
+    if (!kelas) return res.status(404).json({ message: 'Kelas tidak ditemukan' });
+    // Simpan histori sebelum reset
+    const hasilToDelete = (kelas.hasilUjian || []).filter(h => String(h.ujianId) === String(req.params.ujianId));
+    if (hasilToDelete.length > 0) {
+      kelas.historiHasilUjian = kelas.historiHasilUjian || [];
+      kelas.historiHasilUjian.push({
+        ujian: kelas.ujian.id(req.params.ujianId),
+        hasil: hasilToDelete,
+        resetAt: new Date()
+      });
+    }
+    kelas.hasilUjian = (kelas.hasilUjian || []).filter(h => String(h.ujianId) !== String(req.params.ujianId));
+    await kelas.save();
+    res.json({ message: 'Hasil ujian untuk ujian ini berhasil dihapus.' });
+  } catch (err) {
+    res.status(500).json({ message: 'Gagal menghapus hasil ujian.' });
+  }
+});
+
 module.exports = router; 
