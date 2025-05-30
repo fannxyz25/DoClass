@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const TeacherDashboard = () => {
+const TeacherDashboard = ({ onLogout }) => {
   const navigate = useNavigate();
   const [classes, setClasses] = useState([]);
   const [showCreateClass, setShowCreateClass] = useState(false);
@@ -10,6 +10,11 @@ const TeacherDashboard = () => {
     description: '',
     subject: ''
   });
+
+  const handleLogout = () => {
+    onLogout();
+    navigate('/');
+  };
 
   const generateUniqueCode = () => {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -43,12 +48,12 @@ const TeacherDashboard = () => {
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
-            <h1 className="text-2xl font-bold text-gray-800">Teacher Dashboard</h1>
+            <h1 className="text-2xl font-bold text-gray-800">Dasbor Guru</h1>
             <button
-              onClick={() => navigate('/')}
+              onClick={handleLogout}
               className="text-gray-600 hover:text-gray-900"
             >
-              Logout
+              Keluar
             </button>
           </div>
         </div>
@@ -56,23 +61,23 @@ const TeacherDashboard = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-xl font-semibold text-gray-700">My Classes</h2>
+          <h2 className="text-xl font-semibold text-gray-700">Kelas Saya</h2>
           <button
             onClick={() => setShowCreateClass(true)}
             className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
           >
-            Create New Class
+            Buat Kelas Baru
           </button>
         </div>
 
         {showCreateClass && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-lg p-6 w-full max-w-md">
-              <h3 className="text-xl font-semibold mb-4">Create New Class</h3>
+              <h3 className="text-xl font-semibold mb-4">Buat Kelas Baru</h3>
               <form onSubmit={handleCreateClass} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Class Name
+                    Nama Kelas
                   </label>
                   <input
                     type="text"
@@ -85,7 +90,7 @@ const TeacherDashboard = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Subject
+                    Mata Pelajaran
                   </label>
                   <input
                     type="text"
@@ -98,7 +103,7 @@ const TeacherDashboard = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description
+                    Deskripsi
                   </label>
                   <textarea
                     name="description"
@@ -114,13 +119,13 @@ const TeacherDashboard = () => {
                     onClick={() => setShowCreateClass(false)}
                     className="px-4 py-2 text-gray-600 hover:text-gray-800"
                   >
-                    Cancel
+                    Batal
                   </button>
                   <button
                     type="submit"
                     className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
                   >
-                    Create Class
+                    Buat Kelas
                   </button>
                 </div>
               </form>
@@ -148,10 +153,10 @@ const TeacherDashboard = () => {
               <p className="text-gray-600 text-sm mb-4">{classItem.description}</p>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-500">
-                  {classItem.students.length} Students
+                  {classItem.students.length} Siswa
                 </span>
                 <button className="text-blue-500 hover:text-blue-600 text-sm font-medium">
-                  View Details
+                  Lihat Detail
                 </button>
               </div>
             </div>
@@ -160,9 +165,9 @@ const TeacherDashboard = () => {
 
         {classes.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500">No classes created yet</p>
+            <p className="text-gray-500">Belum ada kelas yang dibuat</p>
             <p className="text-gray-400 text-sm mt-2">
-              Click "Create New Class" to get started
+              Klik "Buat Kelas Baru" untuk memulai
             </p>
           </div>
         )}

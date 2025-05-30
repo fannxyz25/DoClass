@@ -11,6 +11,10 @@ function App() {
     setUser(userData);
   };
 
+  const handleLogout = () => {
+    setUser(null);
+  };
+
   return (
     <div className="min-h-screen w-full">
       <Router>
@@ -20,7 +24,7 @@ function App() {
             element={
               user ? (
                 <Navigate
-                  to={user.type === 'teacher' ? '/teacher' : '/student'}
+                  to={user.level === 'guru' ? '/teacher' : '/student'}
                   replace
                 />
               ) : (
@@ -31,8 +35,8 @@ function App() {
           <Route
             path="/teacher"
             element={
-              user?.type === 'teacher' ? (
-                <TeacherDashboard />
+              user?.level === 'guru' ? (
+                <TeacherDashboard onLogout={handleLogout} />
               ) : (
                 <Navigate to="/" replace />
               )
@@ -41,8 +45,8 @@ function App() {
           <Route
             path="/student"
             element={
-              user?.type === 'student' ? (
-                <StudentDashboard />
+              user?.level === 'siswa' ? (
+                <StudentDashboard onLogout={handleLogout} />
               ) : (
                 <Navigate to="/" replace />
               )

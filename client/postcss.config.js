@@ -1,6 +1,7 @@
-export default {
+// Gabungan hasil yang kamu inginkan
+module.exports = {
   plugins: {
-    '@tailwindcss/postcss': {},
+    tailwindcss: {},
     autoprefixer: {},
-  },
+  }
 }
