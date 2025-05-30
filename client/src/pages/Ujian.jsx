@@ -49,14 +49,8 @@ function Ujian() {
       setSubmitted(true);
 
       if (finalScore >= 70) {
-        // Update user level
-        const nextLevel = user.current_level === "SMK-1" ? "SMK-2" : "SMK-3";
-        await axios.put(`http://localhost:5000/api/users/${user._id}`, {
-          current_level: nextLevel
-        });
-        
-        // Update session storage
-        const updatedUser = { ...user, current_level: nextLevel };
+        // Update session storage with new score
+        const updatedUser = { ...user };
         sessionStorage.setItem("user", JSON.stringify(updatedUser));
         
         setTimeout(() => {

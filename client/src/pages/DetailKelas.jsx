@@ -140,14 +140,40 @@ const DetailKelas = () => {
   const handleJawabUjian = async (ujianId) => {
     try {
       const jawabanArr = jawabanSiswa[ujianId] ? Object.values(jawabanSiswa[ujianId]) : [];
+      console.log('Submitting ujian with data:', { ujianId, jawaban: jawabanArr, userId: user._id, nama: user.username });
       const res = await axios.post(`http://localhost:5000/api/kelas/${id}/ujian/submit`, {
         ujianId,
         jawaban: jawabanArr,
         userId: user._id,
         nama: user.username
       });
-      alert(`Nilai Anda: ${res.data.score}. ${res.data.passed ? 'Anda lulus!' : 'Anda belum lulus.'}`);
-      loadUjianList();
+      console.log('Ujian submitted successfully, response:', res.data);
+      
+      // *** Tambahkan panggilan untuk update ranking setelah ujian selesai ***
+      console.log('Attempting to update ranking...');
+      try {
+          const rankingUpdateRes = await axios.post('http://localhost:5000/api/ranking/update-points', {
+              studentId: user._id,
+              classId: id,
+              quizId: ujianId,
+              score: res.data.score
+          }, {
+              headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+          });
+          console.log('Ranking updated successfully:', rankingUpdateRes.data);
+          
+          // Show level up message if it exists
+          if (rankingUpdateRes.data.levelUpMessage) {
+              alert(rankingUpdateRes.data.levelUpMessage);
+          }
+          
+          // Show exam result
+          alert(`Nilai Anda: ${res.data.score}. ${res.data.passed ? 'Anda lulus!' : 'Anda belum lulus.'}`);
+      } catch (rankingError) {
+          console.error('Error updating ranking:', rankingError);
+      }
+
+      loadUjianList(); // Refresh daftar ujian dan hasil ujian
     } catch (error) {
       console.error('Error submitting ujian:', error);
       alert('Gagal mengirim jawaban ujian');
@@ -174,16 +200,6 @@ const DetailKelas = () => {
     } catch (error) {
       console.error("Error creating announcement:", error);
       alert(error.response?.data?.message || "Gagal membuat pengumuman!");
-    }
-  };
-
-  const updateLevelSiswa = async (userId, newLevel) => {
-    try {
-      await axios.patch(`http://localhost:5000/api/users/${userId}/level`, { level: newLevel });
-      alert('Level siswa berhasil diubah!');
-      loadKelasDetail(); // Refresh data kelas
-    } catch (error) {
-      alert('Gagal mengubah level siswa');
     }
   };
 
@@ -659,7 +675,7 @@ const DetailKelas = () => {
                       <tr className="bg-gray-200 text-gray-900 font-bold">
                         <th className="border border-gray-300 px-4 py-2">Nama Siswa</th>
                         <th className="border border-gray-300 px-4 py-2">Level</th>
-                        <th className="border border-gray-300 px-4 py-2">Aksi</th>
+                        <th className="border border-gray-300 px-4 py-2">Total Poin</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -668,15 +684,7 @@ const DetailKelas = () => {
                           <td className="border border-gray-200 px-4 py-2 text-gray-800">{siswa.username || '-'}</td>
                           <td className="border border-gray-200 px-4 py-2 text-gray-800">{siswa.current_level || '-'}</td>
                           <td className="border border-gray-200 px-4 py-2 text-gray-800">
-                            <select
-                              value={siswa.current_level || ''}
-                              onChange={e => updateLevelSiswa(siswa._id, e.target.value)}
-                              className="border rounded px-2 py-1"
-                            >
-                              <option value="SMK-1">SMK-1</option>
-                              <option value="SMK-2">SMK-2</option>
-                              <option value="SMK-3">SMK-3</option>
-                            </select>
+                            {siswa.points || 0} poin
                           </td>
                         </tr>
                       ))}
@@ -729,7 +737,7 @@ const DetailKelas = () => {
                   try {
                     await axios.post(`http://localhost:5000/api/kelas/${id}/ujian`, newUjian);
                     setShowUjianModal(false);
-                    setNewUjian({ level: '', soal: [{ pertanyaan: '', opsi: ['', '', '', ''], jawaban_benar: '' }], min_score: 70 });
+                    setNewUjian({ soal: [{ pertanyaan: '', opsi: ['', '', '', ''], jawaban_benar: '' }], min_score: 70 });
                     loadUjianList();
                     alert('Ujian berhasil dibuat!');
                   } catch (err) {
@@ -738,25 +746,6 @@ const DetailKelas = () => {
                 }}
                 className="space-y-4"
               >
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Level</label>
-                  <select
-                    className="input w-full border rounded px-3 py-2 mt-1"
-                    value={newUjian.level}
-                    onChange={e => setNewUjian({ ...newUjian, level: e.target.value })}
-                    required
-                  >
-                    <option value="" disabled>Pilih Level</option>
-                    {(() => {
-                      const levels = kelas && kelas.enrolledStudents && kelas.enrolledStudents.length > 0
-                        ? [...new Set(kelas.enrolledStudents.map(s => s.current_level).filter(Boolean))]
-                        : [];
-                      return levels.length > 0
-                        ? levels.map((lvl, idx) => <option key={idx} value={lvl}>{lvl}</option>)
-                        : ["SMK-1", "SMK-2", "SMK-3"].map((lvl, idx) => <option key={idx} value={lvl}>{lvl}</option>);
-                    })()}
-                  </select>
-                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Nilai Minimum</label>
                   <input

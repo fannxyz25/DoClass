@@ -36,6 +36,9 @@ const Navbar = () => {
             <Link to="/ujian" className="hover:text-gray-300 transition-colors">
               Ujian
             </Link>
+            <Link to="/ranking" className="hover:text-gray-300 transition-colors">
+              Peringkat
+            </Link>
           </div>
           <div className="flex items-center space-x-4">
             <span className="text-sm">

@@ -38,6 +38,11 @@ router.post('/login', async (req, res) => {
       createdAt: user.createdAt
     };
 
+    // Add 'class' property for students if enrolled in at least one class
+    if (user.role === 'siswa' && user.enrolledKelas && user.enrolledKelas.length > 0) {
+        userResponse.class = user.enrolledKelas[0]._id; // Assuming a student is primarily associated with the first class in the array for ranking purposes
+    }
+
     // Generate JWT token
     const token = jwt.sign(
       { userId: user._id, role: user.role },

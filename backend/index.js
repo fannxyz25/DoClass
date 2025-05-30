@@ -26,6 +26,7 @@ app.use('/api/modul', require('./routes/modul'));
 app.use('/api/ujian', require('./routes/ujian'));
 app.use('/api/users', require('./routes/user'));
 app.use('/api/announcement', require('./routes/announcement'));
+app.use('/api/ranking', require('./routes/ranking'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
