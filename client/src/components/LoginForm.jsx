@@ -49,7 +49,8 @@ const LoginForm = () => {
         } else if (userRole === 'siswa') {
           navigate('/kelas');
         } else {
-          navigate('/beranda');
+          // Fallback for other roles or unexpected scenarios
+          navigate('/'); 
         }
       } else {
         setError('Login gagal - data pengguna tidak valid');
@@ -103,7 +104,7 @@ const LoginForm = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full h-[50px] pl-10 pr-4 rounded-[20px] bg-[#F0F7FF] border border-[#81C4FA] focus:outline-none focus:ring-2 focus:ring-[#0984E3] focus:border-transparent transition-all"
+                  className="w-full h-[50px] pl-10 pr-4 rounded-[20px] bg-[#F0F7FF] border border-[#81C4FA] focus:outline-none focus:ring-2 focus:ring-[#0984E3] focus:border-transparent transition-all text-black"
                   required
                   disabled={isLoading}
                   placeholder="Masukkan email Anda"
@@ -124,7 +125,7 @@ const LoginForm = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full h-[50px] pl-10 pr-4 rounded-[20px] bg-[#F0F7FF] border border-[#81C4FA] focus:outline-none focus:ring-2 focus:ring-[#0984E3] focus:border-transparent transition-all"
+                  className="w-full h-[50px] pl-10 pr-4 rounded-[20px] bg-[#F0F7FF] border border-[#81C4FA] focus:outline-none focus:ring-2 focus:ring-[#0984E3] focus:border-transparent transition-all text-black"
                   required
                   disabled={isLoading}
                   placeholder="Masukkan password Anda"

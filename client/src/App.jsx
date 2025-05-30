@@ -59,14 +59,15 @@ function App() {
           />
 
           {/* Protected Routes for Both Roles */}
-          <Route 
+          {/* Removed Beranda route */}
+          {/* <Route 
             path="/beranda" 
             element={
               <ProtectedRoute allowedRoles={['guru', 'siswa']}>
                 <Beranda />
               </ProtectedRoute>
             } 
-          />
+          /> */}
           <Route 
             path="/modul" 
             element={

@@ -288,10 +288,10 @@ const DetailKelas = () => {
                   Tambah Modul
                 </button>
                 <button
-                  onClick={() => { console.log('Klik Buat Ujian'); setShowUjianModal(true); }}
+                  onClick={() => { console.log('Klik Buat Quiz'); setShowUjianModal(true); }}
                   className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
                 >
-                  Buat Ujian
+                  Buat Quiz
                 </button>
               </div>
             )}
@@ -341,7 +341,7 @@ const DetailKelas = () => {
               }`}
               onClick={() => setActiveTab('ujian')}
             >
-              Ujian
+              Quiz
             </button>
           </div>
 
@@ -352,9 +352,9 @@ const DetailKelas = () => {
                 {/* Guru: tombol dan tabel hasil ujian */}
                 {user?.role === 'guru' && (
                   <div className="mt-8">
-                    <h3 className="text-lg font-bold mb-2">Daftar Soal Ujian yang Sudah Dibuat</h3>
+                    <h3 className="text-lg font-bold mb-2">Daftar Soal Quiz yang Sudah Dibuat</h3>
                     {ujianList.length === 0 ? (
-                      <div className="text-gray-500">Belum ada ujian yang dibuat.</div>
+                      <div className="text-gray-500">Belum ada quiz yang dibuat.</div>
                     ) : (
                       ujianList.map((ujian, idx) => (
                         <div key={ujian._id || idx} className="mb-6 p-4 border rounded bg-gray-50">
@@ -412,7 +412,7 @@ const DetailKelas = () => {
                                   onChange={() => setResetOption('all')}
                                   className="mr-2"
                                 />
-                                <span className="text-gray-900">Hapus semua nilai siswa untuk semua ujian di kelas ini</span>
+                                <span className="text-gray-900">Hapus semua nilai siswa untuk semua quiz di kelas ini</span>
                               </label>
                               <label className="flex items-center">
                                 <input
@@ -423,19 +423,19 @@ const DetailKelas = () => {
                                   onChange={() => setResetOption('ujian')}
                                   className="mr-2"
                                 />
-                                <span className="text-gray-900">Hapus nilai siswa untuk ujian tertentu saja</span>
+                                <span className="text-gray-900">Hapus nilai siswa untuk quiz tertentu saja</span>
                               </label>
                             </div>
                           </div>
                           {resetOption === 'ujian' && (
                             <div className="mb-4">
-                              <label className="block mb-2 font-medium text-gray-800">Pilih Ujian:</label>
+                              <label className="block mb-2 font-medium text-gray-800">Pilih Quiz:</label>
                               <select
                                 className="w-full border rounded px-3 py-2"
                                 value={selectedUjianId}
                                 onChange={e => setSelectedUjianId(e.target.value)}
                               >
-                                <option value="">-- Pilih Ujian --</option>
+                                <option value="">-- Pilih Quiz --</option>
                                 {ujianList.map((ujian) => (
                                   <option key={ujian._id} value={ujian._id}>
                                     {ujian.level ? `Level: ${ujian.level}` : ''} {ujian.soal[0]?.pertanyaan ? `- ${ujian.soal[0].pertanyaan.substring(0, 30)}...` : ''}
@@ -465,7 +465,7 @@ const DetailKelas = () => {
                     )}
                     {showHasilUjian && hasilUjian.length > 0 && (
                       <div className="overflow-x-auto">
-                        <h3 className="text-lg font-bold mb-2">Hasil Ujian Siswa</h3>
+                        <h3 className="text-lg font-bold mb-2">Hasil Quiz Siswa</h3>
                         <table className="min-w-full border border-gray-300 text-sm bg-white rounded-lg overflow-hidden">
                           <thead>
                             <tr className="bg-gray-200 text-gray-900 font-bold">
@@ -495,25 +495,25 @@ const DetailKelas = () => {
                 {/* Siswa: hasil ujian jika sudah mengerjakan */}
                 {user?.role === 'siswa' && hasilUjianSiswa && (
                   <div className="bg-white p-6 rounded-lg shadow border border-gray-200 mt-6 max-w-xl mx-auto">
-                    <h3 className="text-lg font-bold mb-2 text-gray-900">Anda sudah mengerjakan ujian</h3>
+                    <h3 className="text-lg font-bold mb-2 text-gray-900">Anda sudah mengerjakan quiz</h3>
                     <p className="mb-2 text-gray-800">Nilai Anda: <span className="font-bold">{hasilUjianSiswa.score}</span></p>
                     <p className="mb-2 text-gray-800">Status: {hasilUjianSiswa.passed ? <span className="text-green-600 font-semibold">Lulus</span> : <span className="text-red-600 font-semibold">Tidak Lulus</span>}</p>
                     <p className="text-gray-500 text-sm">Dikerjakan pada: {new Date(hasilUjianSiswa.waktu).toLocaleString()}</p>
                   </div>
                 )}
-                {/* Siswa: form ujian jika belum mengerjakan */}
+                {/* Siswa: form quiz jika belum mengerjakan */}
                 {user?.role === 'siswa' && ujianList.length === 0 && (
-                  <div className="text-center text-gray-500 py-8">Belum ada ujian untuk level Anda.</div>
+                  <div className="text-center text-gray-500 py-8">Belum ada quiz untuk level Anda.</div>
                 )}
                 {user?.role === 'siswa' && ujianList.map((ujian, ujianIndex) => {
                   const ujianKey = ujian._id?.toString();
                   const hasilSiswa = hasilUjianMap[ujianKey];
-                  console.log('Render ujian:', ujianKey, ujian, 'Hasil siswa:', hasilSiswa);
+                  console.log('Render quiz:', ujianKey, ujian, 'Hasil siswa:', hasilSiswa);
                   return (
                     <div key={ujianKey} className="space-y-6">
                       {hasilSiswa ? (
                         <div className="bg-white p-6 rounded-lg shadow border border-gray-200 mt-6 max-w-xl mx-auto">
-                          <h3 className="text-lg font-bold mb-2 text-gray-900">Anda sudah mengerjakan ujian</h3>
+                          <h3 className="text-lg font-bold mb-2 text-gray-900">Anda sudah mengerjakan quiz</h3>
                           <p className="mb-2 text-gray-800">Nilai Anda: <span className="font-bold">{hasilSiswa.score}</span></p>
                           <p className="mb-2 text-gray-800">Status: {hasilSiswa.passed ? <span className="text-green-600 font-semibold">Lulus</span> : <span className="text-red-600 font-semibold">Tidak Lulus</span>}</p>
                           <p className="text-gray-500 text-sm">Dikerjakan pada: {new Date(hasilSiswa.waktu).toLocaleString()}</p>
@@ -729,12 +729,12 @@ const DetailKelas = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg w-full max-w-lg relative max-h-[80vh] overflow-y-auto">
               <button
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                className="absolute top-2 right-2 bg-white text-black hover:bg-gray-100"
                 onClick={() => setShowUjianModal(false)}
               >
                 &times;
               </button>
-              <h2 className="text-xl font-bold mb-4">Buat Ujian</h2>
+              <h2 className="text-xl font-bold mb-4 text-black">Buat Quiz</h2>
               <form
                 onSubmit={async (e) => {
                   e.preventDefault();
@@ -743,18 +743,18 @@ const DetailKelas = () => {
                     setShowUjianModal(false);
                     setNewUjian({ level: "", soal: [{ pertanyaan: '', opsi: ['', '', '', ''], jawaban_benar: '' }], min_score: 70 });
                     loadUjianList();
-                    alert('Ujian berhasil dibuat!');
+                    alert('Quiz berhasil dibuat!');
                   } catch (err) {
-                    alert('Gagal membuat ujian!');
+                    alert('Gagal membuat quiz!');
                   }
                 }}
                 className="space-y-4"
               >
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Level Ujian</label>
+                  <label className="block text-sm font-medium text-gray-700">Level Quiz</label>
                   <input
                     type="text"
-                    className="input w-full border rounded px-3 py-2 mt-1"
+                    className="input w-full border rounded px-3 py-2 mt-1 bg-white text-black"
                     placeholder="Contoh: Level 1"
                     value={newUjian.level}
                     onChange={e => setNewUjian({ ...newUjian, level: e.target.value })}
@@ -765,7 +765,7 @@ const DetailKelas = () => {
                   <label className="block text-sm font-medium text-gray-700">Nilai Minimum</label>
                   <input
                     type="number"
-                    className="input w-full border rounded px-3 py-2 mt-1"
+                    className="input w-full border rounded px-3 py-2 mt-1 bg-white text-black"
                     value={newUjian.min_score}
                     onChange={e => setNewUjian({ ...newUjian, min_score: Number(e.target.value) })}
                     min={0}
@@ -776,10 +776,10 @@ const DetailKelas = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Soal</label>
                   {newUjian.soal.map((soal, idx) => (
-                    <div key={idx} className="border rounded p-3 mb-4 bg-gray-50">
+                    <div key={idx} className="border rounded p-3 mb-4 bg-white">
                       <input
                         type="text"
-                        className="input w-full border rounded px-3 py-2 mb-2"
+                        className="input w-full border rounded px-3 py-2 mb-2 bg-white text-black"
                         placeholder={`Pertanyaan ${idx + 1}`}
                         value={soal.pertanyaan}
                         onChange={e => {
@@ -794,7 +794,7 @@ const DetailKelas = () => {
                           <input
                             key={opsiIdx}
                             type="text"
-                            className="input w-full border rounded px-3 py-2"
+                            className="input w-full border rounded px-3 py-2 bg-white text-black"
                             placeholder={`Opsi ${String.fromCharCode(65 + opsiIdx)}`}
                             value={opsi}
                             onChange={e => {
@@ -809,7 +809,7 @@ const DetailKelas = () => {
                       <div>
                         <label className="block text-sm font-medium text-gray-700">Jawaban Benar</label>
                         <select
-                          className="input w-full border rounded px-3 py-2 mt-1"
+                          className="input w-full border rounded px-3 py-2 mt-1 text-black bg-white"
                           value={soal.jawaban_benar}
                           onChange={e => {
                             const soalBaru = [...newUjian.soal];
@@ -840,7 +840,7 @@ const DetailKelas = () => {
                         {idx === newUjian.soal.length - 1 && (
                           <button
                             type="button"
-                            className="text-blue-600 hover:underline"
+                            className="text-blue-600 hover:underline bg-white text-black"
                             onClick={() => {
                               setNewUjian({
                                 ...newUjian,
@@ -865,9 +865,9 @@ const DetailKelas = () => {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white"
+                    className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-black"
                   >
-                    Simpan Ujian
+                    Simpan Quiz
                   </button>
                 </div>
               </form>
@@ -880,12 +880,12 @@ const DetailKelas = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg w-full max-w-lg relative max-h-[80vh] overflow-y-auto">
               <button
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                className="absolute top-2 right-2 bg-white text-black hover:bg-gray-100"
                 onClick={() => setShowModulForm(false)}
               >
                 &times;
               </button>
-              <h2 className="text-xl font-bold mb-4">Tambah Modul</h2>
+              <h2 className="text-xl font-bold mb-4 text-black">Tambah Modul</h2>
               <form
                 onSubmit={async (e) => {
                   e.preventDefault();
@@ -927,7 +927,7 @@ const DetailKelas = () => {
                   <label className="block text-sm font-medium text-gray-700">Judul Modul</label>
                   <input
                     type="text"
-                    className="input w-full border rounded px-3 py-2 mt-1"
+                    className="input w-full border rounded px-3 py-2 mt-1 bg-white text-black"
                     value={modulForm.judul}
                     onChange={e => setModulForm({ ...modulForm, judul: e.target.value })}
                     required
@@ -936,7 +936,7 @@ const DetailKelas = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Deskripsi</label>
                   <textarea
-                    className="input w-full border rounded px-3 py-2 mt-1"
+                    className="input w-full border rounded px-3 py-2 mt-1 bg-white text-black"
                     value={modulForm.deskripsi}
                     onChange={e => setModulForm({ ...modulForm, deskripsi: e.target.value })}
                     required
@@ -946,7 +946,7 @@ const DetailKelas = () => {
                   <label className="block text-sm font-medium text-gray-700">File</label>
                   <input
                     type="file"
-                    className="input w-full border rounded px-3 py-2 mt-1"
+                    className="input w-full border rounded px-3 py-2 mt-1 text-black bg-white file:bg-white file:text-black file:border-none file:rounded-md file:px-4 file:py-2 file:mr-4 file:hover:file:bg-gray-100"
                     onChange={e => setModulForm({ ...modulForm, file: e.target.files[0] })}
                     required
                   />
@@ -969,7 +969,7 @@ const DetailKelas = () => {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white"
+                    className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-black"
                   >
                     Simpan Modul
                   </button>
@@ -993,7 +993,7 @@ const DetailKelas = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg w-full max-w-lg relative max-h-[80vh] overflow-y-auto">
               <button
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                className="absolute top-2 right-2 bg-white text-black hover:bg-gray-100"
                 onClick={() => setShowAnnouncementModal(false)}
               >
                 &times;
@@ -1029,7 +1029,7 @@ const DetailKelas = () => {
                   <label className="block text-sm font-medium text-gray-700">Judul Pengumuman</label>
                   <input
                     type="text"
-                    className="input w-full border rounded px-3 py-2 mt-1"
+                    className="input w-full border rounded px-3 py-2 mt-1 bg-white text-black"
                     value={newAnnouncement.judul}
                     onChange={e => setNewAnnouncement({ ...newAnnouncement, judul: e.target.value })}
                     required
@@ -1038,7 +1038,7 @@ const DetailKelas = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Isi Pengumuman</label>
                   <textarea
-                    className="input w-full border rounded px-3 py-2 mt-1"
+                    className="input w-full border rounded px-3 py-2 mt-1 bg-white text-black"
                     value={newAnnouncement.isi}
                     onChange={e => setNewAnnouncement({ ...newAnnouncement, isi: e.target.value })}
                     required
