@@ -7,7 +7,7 @@ const auth = require('./auth');
 router.get('/class/:classId', auth, async (req, res) => {
     try {
         const rankings = await StudentRanking.find({ class: req.params.classId })
-            .populate('student', 'name email')
+            .populate('student', '_id username name email')
             .sort({ points: -1 });
         res.json(rankings);
     } catch (error) {

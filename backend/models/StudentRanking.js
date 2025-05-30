@@ -8,7 +8,7 @@ const studentRankingSchema = new mongoose.Schema({
     },
     class: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Class',
+        ref: 'Kelas',
         required: true
     },
     points: {

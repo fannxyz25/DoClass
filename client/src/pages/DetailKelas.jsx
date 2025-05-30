@@ -34,6 +34,7 @@ const DetailKelas = () => {
   const [showHasilUjian, setShowHasilUjian] = useState(false);
   const [hasilUjianSiswa, setHasilUjianSiswa] = useState(null);
   const [hasilUjianMap, setHasilUjianMap] = useState({});
+  const [rankingData, setRankingData] = useState([]);
 
   // State for announcements
   const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
@@ -55,6 +56,26 @@ const DetailKelas = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [id]);
+
+  // Effect to fetch ranking data when the ranking tab is active
+  useEffect(() => {
+    const fetchRanking = async () => {
+      if (activeTab === 'ranking' && id) {
+        try {
+          // Assuming a backend endpoint exists at /api/ranking/class/:id
+          const res = await axios.get(`http://localhost:5000/api/ranking/class/${id}`);
+          setRankingData(res.data);
+          console.log('Ranking data fetched:', res.data);
+        } catch (error) {
+          console.error('Error fetching ranking data:', error);
+          setRankingData([]); // Clear data on error
+        }
+      }
+    };
+
+    fetchRanking();
+
+  }, [activeTab, id]); // Rerun when activeTab or class ID changes
 
   const loadKelasDetail = async () => {
     try {
@@ -342,6 +363,17 @@ const DetailKelas = () => {
               onClick={() => setActiveTab('ujian')}
             >
               Quiz
+            </button>
+            {/* Add Ranking Tab */}
+            <button
+              className={`px-4 py-2 ${
+                activeTab === 'ranking'
+                  ? 'border-b-2 border-blue-500 text-blue-600'
+                  : 'bg-white text-black'
+              }`}
+              onClick={() => setActiveTab('ranking')}
+            >
+              Peringkat
             </button>
           </div>
 
@@ -719,6 +751,37 @@ const DetailKelas = () => {
                       </div>
                     </div>
                   ))
+                )}
+              </div>
+            )}
+
+            {/* Ranking Tab Content */}
+            {activeTab === 'ranking' && (
+              <div>
+                <h3 className="text-lg font-bold mb-4">Peringkat Siswa</h3>
+                {rankingData.length > 0 ? (
+                  <table className="min-w-full border border-gray-300 text-sm bg-white rounded-lg overflow-hidden">
+                    <thead>
+                      <tr className="bg-gray-200 text-gray-900 font-bold">
+                        <th className="border border-gray-300 px-4 py-2">Peringkat</th>
+                        <th className="border border-gray-300 px-4 py-2">Nama Siswa</th>
+                        <th className="border border-gray-300 px-4 py-2">Poin</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rankingData.map((siswa, index) => (
+                        <tr key={siswa._id} className="text-center hover:bg-gray-50">
+                          <td className="border border-gray-200 px-4 py-2 text-gray-800">{index + 1}</td>
+                          <td className="border border-gray-200 px-4 py-2 text-gray-800">{siswa.student?.username || '-'}</td>
+                          <td className="border border-gray-200 px-4 py-2 text-gray-800">{siswa.points || 0}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <div className="text-center py-8 bg-gray-50 rounded-lg">
+                     <p className="text-sm text-gray-500">Belum ada data peringkat untuk kelas ini.</p>
+                  </div>
                 )}
               </div>
             )}

@@ -4,7 +4,6 @@ import Register from './pages/register'
 import GuruKelas from "./pages/GuruKelas";
 import SiswaKelas from "./pages/SiswaKelas";
 import DetailKelas from "./pages/DetailKelas";
-import Beranda from './pages/Beranda'
 import Modul from './pages/modul'
 // import TambahModul from './pages/TambahModul'
 import Ujian from './pages/Ujian'
