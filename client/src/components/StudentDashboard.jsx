@@ -24,9 +24,9 @@ const StudentDashboard = ({ onLogout }) => {
       const newClass = {
         id: Date.now(),
         code: classCode,
-        name: `Class ${classCode}`,
-        subject: 'Sample Subject',
-        teacher: 'Teacher Name'
+        name: `Kelas ${classCode}`,
+        subject: 'Contoh Mata Pelajaran',
+        teacher: 'Nama Guru'
       };
 
       setJoinedClasses([...joinedClasses, newClass]);
@@ -40,12 +40,12 @@ const StudentDashboard = ({ onLogout }) => {
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
-            <h1 className="text-2xl font-bold text-gray-800">Student Dashboard</h1>
+            <h1 className="text-2xl font-bold text-gray-800">Dasbor Siswa</h1>
             <button
               onClick={handleLogout}
               className="text-gray-600 hover:text-gray-900"
             >
-              Logout
+              Keluar
             </button>
           </div>
         </div>
@@ -53,30 +53,30 @@ const StudentDashboard = ({ onLogout }) => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-xl font-semibold text-gray-700">My Classes</h2>
+          <h2 className="text-xl font-semibold text-gray-700">Kelas Saya</h2>
           <button
             onClick={() => setShowJoinClass(true)}
             className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
           >
-            Join Class
+            Gabung Kelas
           </button>
         </div>
 
         {showJoinClass && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-lg p-6 w-full max-w-md">
-              <h3 className="text-xl font-semibold mb-4">Join a Class</h3>
+              <h3 className="text-xl font-semibold mb-4">Gabung Kelas</h3>
               <form onSubmit={handleJoinClass} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Class Code
+                    Kode Kelas
                   </label>
                   <input
                     type="text"
                     value={classCode}
                     onChange={(e) => setClassCode(e.target.value.toUpperCase())}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent uppercase"
-                    placeholder="Enter class code"
+                    placeholder="Masukkan kode kelas"
                     required
                   />
                   {error && (
@@ -89,13 +89,13 @@ const StudentDashboard = ({ onLogout }) => {
                     onClick={() => setShowJoinClass(false)}
                     className="px-4 py-2 text-gray-600 hover:text-gray-800"
                   >
-                    Cancel
+                    Batal
                   </button>
                   <button
                     type="submit"
                     className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
                   >
-                    Join Class
+                    Gabung Kelas
                   </button>
                 </div>
               </form>
@@ -121,11 +121,11 @@ const StudentDashboard = ({ onLogout }) => {
                 </span>
               </div>
               <p className="text-gray-600 text-sm mb-4">
-                Teacher: {classItem.teacher}
+                Guru: {classItem.teacher}
               </p>
               <div className="flex justify-end">
                 <button className="text-blue-500 hover:text-blue-600 text-sm font-medium">
-                  View Class
+                  Lihat Kelas
                 </button>
               </div>
             </div>
@@ -134,9 +134,9 @@ const StudentDashboard = ({ onLogout }) => {
 
         {joinedClasses.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500">You haven't joined any classes yet</p>
+            <p className="text-gray-500">Anda belum bergabung dengan kelas apapun</p>
             <p className="text-gray-400 text-sm mt-2">
-              Click "Join Class" to enter a class code
+              Klik "Gabung Kelas" untuk memasukkan kode kelas
             </p>
           </div>
         )}

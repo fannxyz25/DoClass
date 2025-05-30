@@ -8,7 +8,7 @@ router.get('/', async (req, res) => {
     const ujian = await Ujian.find().populate('kelas');
     res.json(ujian);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching ujian', error: error.message });
+    res.status(500).json({ message: 'Gagal mengambil data ujian', error: error.message });
   }
 });
 

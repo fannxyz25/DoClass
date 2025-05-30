@@ -8,7 +8,7 @@ router.get('/', async (req, res) => {
     const kelas = await Kelas.find();
     res.json(kelas);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching kelas', error: error.message });
+    res.status(500).json({ message: 'Gagal mengambil data kelas', error: error.message });
   }
 });
 
@@ -18,9 +18,9 @@ router.post('/', async (req, res) => {
     const { nama, jurusan } = req.body;
     const kelas = new Kelas({ nama, jurusan });
     await kelas.save();
-    res.status(201).json({ message: 'Kelas created', kelas });
+    res.status(201).json({ message: 'Kelas berhasil dibuat', kelas });
   } catch (error) {
-    res.status(500).json({ message: 'Error creating kelas', error: error.message });
+    res.status(500).json({ message: 'Gagal membuat kelas', error: error.message });
   }
 });
 

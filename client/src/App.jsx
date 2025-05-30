@@ -24,7 +24,7 @@ function App() {
             element={
               user ? (
                 <Navigate
-                  to={user.type === 'teacher' ? '/teacher' : '/student'}
+                  to={user.level === 'guru' ? '/teacher' : '/student'}
                   replace
                 />
               ) : (
@@ -35,7 +35,7 @@ function App() {
           <Route
             path="/teacher"
             element={
-              user?.type === 'teacher' ? (
+              user?.level === 'guru' ? (
                 <TeacherDashboard onLogout={handleLogout} />
               ) : (
                 <Navigate to="/" replace />
@@ -45,7 +45,7 @@ function App() {
           <Route
             path="/student"
             element={
-              user?.type === 'student' ? (
+              user?.level === 'siswa' ? (
                 <StudentDashboard onLogout={handleLogout} />
               ) : (
                 <Navigate to="/" replace />

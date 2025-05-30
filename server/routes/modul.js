@@ -8,7 +8,7 @@ router.get('/', async (req, res) => {
     const modul = await Modul.find().populate('kelas');
     res.json(modul);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching modul', error: error.message });
+    res.status(500).json({ message: 'Gagal mengambil data modul', error: error.message });
   }
 });
 

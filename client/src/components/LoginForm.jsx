@@ -1,14 +1,18 @@
 import { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = ({ onLogin }) => {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
-  const [userType, setUserType] = useState('student');
+  const [userType, setUserType] = useState('siswa');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     name: '',
     confirmPassword: ''
   });
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     setFormData({
@@ -17,23 +21,47 @@ const LoginForm = ({ onLogin }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     
     if (!isLogin && formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match!');
+      setError('Kata sandi tidak cocok!');
       return;
     }
 
-    // Here you would typically make an API call to authenticate/register
-    // For now, we'll simulate a successful login/registration
-    const userData = {
-      type: userType,
-      email: formData.email,
-      name: formData.name || 'User'
-    };
+    try {
+      if (isLogin) {
+        // Login
+        const response = await axios.post('http://localhost:5000/api/auth/login', {
+          email: formData.email,
+          password: formData.password,
+          level: userType
+        });
 
-    onLogin(userData);
+        if (response.data.user.level !== userType) {
+          setError(`Akun ini terdaftar sebagai ${response.data.user.level}, bukan ${userType}`);
+          return;
+        }
+
+        onLogin(response.data.user);
+      } else {
+        // Register
+        const response = await axios.post('http://localhost:5000/api/auth/register', {
+          email: formData.email,
+          password: formData.password,
+          name: formData.name,
+          level: userType
+        });
+
+        if (response.status === 201) {
+          setIsLogin(true);
+          setError('');
+        }
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Terjadi kesalahan');
+    }
   };
 
   return (
@@ -41,37 +69,41 @@ const LoginForm = ({ onLogin }) => {
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-800 mb-2">
-            {isLogin ? 'Welcome Back!' : 'Create Account'}
+            {isLogin ? 'Selamat Datang Kembali!' : 'Buat Akun'}
           </h2>
           <p className="text-gray-600">
-            {isLogin ? 'Please sign in to continue' : 'Join us to get started'}
+            {isLogin ? 'Silakan masuk untuk melanjutkan' : 'Bergabunglah dengan kami untuk memulai'}
           </p>
         </div>
 
-        {!isLogin && (
-          <div className="mb-6">
-            <div className="flex gap-4 mb-4">
-              <button
-                onClick={() => setUserType('student')}
-                className={`flex-1 py-2 px-4 rounded-lg transition-colors ${
-                  userType === 'student'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Student
-              </button>
-              <button
-                onClick={() => setUserType('teacher')}
-                className={`flex-1 py-2 px-4 rounded-lg transition-colors ${
-                  userType === 'teacher'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Teacher
-              </button>
-            </div>
+        <div className="mb-6">
+          <div className="flex gap-4 mb-4">
+            <button
+              onClick={() => setUserType('siswa')}
+              className={`flex-1 py-2 px-4 rounded-lg transition-colors ${
+                userType === 'siswa'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Siswa
+            </button>
+            <button
+              onClick={() => setUserType('guru')}
+              className={`flex-1 py-2 px-4 rounded-lg transition-colors ${
+                userType === 'guru'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Guru
+            </button>
+          </div>
+        </div>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+            {error}
           </div>
         )}
 
@@ -79,7 +111,7 @@ const LoginForm = ({ onLogin }) => {
           {!isLogin && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Full Name
+                Nama Lengkap
               </label>
               <input
                 type="text"
@@ -87,7 +119,7 @@ const LoginForm = ({ onLogin }) => {
                 value={formData.name}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter your full name"
+                placeholder="Masukkan nama lengkap"
                 required
               />
             </div>
@@ -103,14 +135,14 @@ const LoginForm = ({ onLogin }) => {
               value={formData.email}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Enter your email"
+              placeholder="Masukkan email"
               required
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
+              Kata Sandi
             </label>
             <input
               type="password"
@@ -118,7 +150,7 @@ const LoginForm = ({ onLogin }) => {
               value={formData.password}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Enter your password"
+              placeholder="Masukkan kata sandi"
               required
             />
           </div>
@@ -126,7 +158,7 @@ const LoginForm = ({ onLogin }) => {
           {!isLogin && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Confirm Password
+                Konfirmasi Kata Sandi
               </label>
               <input
                 type="password"
@@ -134,7 +166,7 @@ const LoginForm = ({ onLogin }) => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Confirm your password"
+                placeholder="Konfirmasi kata sandi"
                 required
               />
             </div>
@@ -144,7 +176,7 @@ const LoginForm = ({ onLogin }) => {
             type="submit"
             className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors font-medium"
           >
-            {isLogin ? 'Sign In' : 'Create Account'}
+            {isLogin ? 'Masuk' : 'Buat Akun'}
           </button>
         </form>
 
@@ -154,8 +186,8 @@ const LoginForm = ({ onLogin }) => {
             className="text-blue-500 hover:text-blue-600 font-medium"
           >
             {isLogin
-              ? "Don't have an account? Sign up"
-              : 'Already have an account? Sign in'}
+              ? "Belum punya akun? Daftar"
+              : 'Sudah punya akun? Masuk'}
           </button>
         </div>
       </div>
