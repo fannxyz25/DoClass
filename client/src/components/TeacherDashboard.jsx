@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const TeacherDashboard = () => {
+const TeacherDashboard = ({ onLogout }) => {
   const navigate = useNavigate();
   const [classes, setClasses] = useState([]);
   const [showCreateClass, setShowCreateClass] = useState(false);
@@ -10,6 +10,11 @@ const TeacherDashboard = () => {
     description: '',
     subject: ''
   });
+
+  const handleLogout = () => {
+    onLogout();
+    navigate('/');
+  };
 
   const generateUniqueCode = () => {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -45,7 +50,7 @@ const TeacherDashboard = () => {
           <div className="flex justify-between h-16 items-center">
             <h1 className="text-2xl font-bold text-gray-800">Teacher Dashboard</h1>
             <button
-              onClick={() => navigate('/')}
+              onClick={handleLogout}
               className="text-gray-600 hover:text-gray-900"
             >
               Logout

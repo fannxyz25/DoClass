@@ -1,12 +1,17 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const StudentDashboard = () => {
+const StudentDashboard = ({ onLogout }) => {
   const navigate = useNavigate();
   const [joinedClasses, setJoinedClasses] = useState([]);
   const [showJoinClass, setShowJoinClass] = useState(false);
   const [classCode, setClassCode] = useState('');
   const [error, setError] = useState('');
+
+  const handleLogout = () => {
+    onLogout();
+    navigate('/');
+  };
 
   const handleJoinClass = (e) => {
     e.preventDefault();
@@ -37,7 +42,7 @@ const StudentDashboard = () => {
           <div className="flex justify-between h-16 items-center">
             <h1 className="text-2xl font-bold text-gray-800">Student Dashboard</h1>
             <button
-              onClick={() => navigate('/')}
+              onClick={handleLogout}
               className="text-gray-600 hover:text-gray-900"
             >
               Logout
