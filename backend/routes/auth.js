@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 // Login endpoint
@@ -37,6 +38,13 @@ router.post('/login', async (req, res) => {
       createdAt: user.createdAt
     };
 
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET || 'your-secret-key',
+      { expiresIn: '24h' }
+    );
+
     console.log('Login successful:', { 
       userId: userResponse._id,
       username: userResponse.username,
@@ -45,7 +53,8 @@ router.post('/login', async (req, res) => {
 
     res.json({
       message: 'Login berhasil',
-      user: userResponse
+      user: userResponse,
+      token
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -97,6 +106,13 @@ router.post('/register', async (req, res) => {
       createdAt: user.createdAt
     };
 
+    // Generate JWT token for new user
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET || 'your-secret-key',
+      { expiresIn: '24h' }
+    );
+
     console.log('Register successful:', {
       userId: userResponse._id,
       username: userResponse.username,
@@ -105,7 +121,8 @@ router.post('/register', async (req, res) => {
 
     res.status(201).json({
       message: 'Registrasi berhasil',
-      user: userResponse
+      user: userResponse,
+      token
     });
   } catch (error) {
     console.error('Register error:', error);

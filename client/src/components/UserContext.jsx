@@ -7,29 +7,43 @@ export const UserProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Try to load user data from localStorage on mount
     try {
-      const savedUser = sessionStorage.getItem('user');
-      setUser(savedUser ? JSON.parse(savedUser) : null);
+      const token = localStorage.getItem('token');
+      const savedUser = localStorage.getItem('user');
+      if (token && savedUser) {
+        setUser(JSON.parse(savedUser));
+      } else {
+        setUser(null);
+      }
     } catch (error) {
+      console.error('Error loading user data:', error);
       setUser(null);
     }
     setIsLoading(false);
   }, []);
 
-  const updateUser = (newUserData) => {
+  const updateUser = (userData) => {
     try {
-      if (newUserData) {
-        sessionStorage.setItem('user', JSON.stringify(newUserData));
+      if (userData) {
+        // Save complete user data to localStorage
+        localStorage.setItem('user', JSON.stringify(userData));
+        setUser(userData);
       } else {
-        sessionStorage.removeItem('user');
+        // Clear user data on logout
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        setUser(null);
       }
-      setUser(newUserData);
     } catch (error) {
       console.error('Error updating user:', error);
+      setUser(null);
     }
   };
 
-  if (isLoading) return null;
+  if (isLoading) {
+    return null; // or a loading spinner
+  }
 
   return (
     <UserContext.Provider value={{ user, updateUser }}>

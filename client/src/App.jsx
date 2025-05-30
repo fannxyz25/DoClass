@@ -10,6 +10,7 @@ import Modul from './pages/modul'
 import Ujian from './pages/Ujian'
 import ProtectedRoute from './components/ProtectedRoute'
 import { UserProvider } from './components/UserContext'
+import LoginForm from './components/LoginForm'
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
       <Router>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<LoginForm />} />
           <Route path="/register" element={<Register />} />
 
           {/* Protected Guru Routes */}
