@@ -99,7 +99,7 @@ const RegisterForm = () => {
             </p>
           </div>
           <button
-            onClick={() => navigate('/login')}
+            onClick={() => navigate('/')}
             className="bg-white text-[#0984E3] px-8 py-4 rounded-full flex items-center justify-center gap-2 hover:bg-opacity-90 transition-all transform hover:scale-[1.02] shadow-lg"
           >
             Masuk
@@ -134,7 +134,7 @@ const RegisterForm = () => {
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  className="w-full h-[50px] pl-10 pr-4 rounded-[20px] bg-[#F0F7FF] border border-[#81C4FA] focus:outline-none focus:ring-2 focus:ring-[#0984E3] focus:border-transparent transition-all"
+                  className="w-full h-[50px] pl-10 pr-4 rounded-[20px] bg-[#F0F7FF] border border-[#81C4FA] focus:outline-none focus:ring-2 focus:ring-[#0984E3] focus:border-transparent transition-all text-black"
                   required
                   disabled={isLoading}
                   placeholder="Masukkan username Anda"
@@ -155,7 +155,7 @@ const RegisterForm = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full h-[50px] pl-10 pr-4 rounded-[20px] bg-[#F0F7FF] border border-[#81C4FA] focus:outline-none focus:ring-2 focus:ring-[#0984E3] focus:border-transparent transition-all"
+                  className="w-full h-[50px] pl-10 pr-4 rounded-[20px] bg-[#F0F7FF] border border-[#81C4FA] focus:outline-none focus:ring-2 focus:ring-[#0984E3] focus:border-transparent transition-all text-black"
                   required
                   disabled={isLoading}
                   placeholder="Masukkan email Anda"
@@ -176,7 +176,7 @@ const RegisterForm = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full h-[50px] pl-10 pr-4 rounded-[20px] bg-[#F0F7FF] border border-[#81C4FA] focus:outline-none focus:ring-2 focus:ring-[#0984E3] focus:border-transparent transition-all"
+                  className="w-full h-[50px] pl-10 pr-4 rounded-[20px] bg-[#F0F7FF] border border-[#81C4FA] focus:outline-none focus:ring-2 focus:ring-[#0984E3] focus:border-transparent transition-all text-black"
                   required
                   disabled={isLoading}
                   placeholder="Masukkan password Anda"
@@ -197,7 +197,7 @@ const RegisterForm = () => {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="w-full h-[50px] pl-10 pr-4 rounded-[20px] bg-[#F0F7FF] border border-[#81C4FA] focus:outline-none focus:ring-2 focus:ring-[#0984E3] focus:border-transparent transition-all"
+                  className="w-full h-[50px] pl-10 pr-4 rounded-[20px] bg-[#F0F7FF] border border-[#81C4FA] focus:outline-none focus:ring-2 focus:ring-[#0984E3] focus:border-transparent transition-all text-black"
                   required
                   disabled={isLoading}
                   placeholder="Konfirmasi password Anda"
@@ -217,7 +217,7 @@ const RegisterForm = () => {
                   name="role"
                   value={formData.role}
                   onChange={handleChange}
-                  className="w-full h-[50px] pl-10 pr-4 rounded-[20px] bg-[#F0F7FF] border border-[#81C4FA] focus:outline-none focus:ring-2 focus:ring-[#0984E3] focus:border-transparent transition-all appearance-none"
+                  className="w-full h-[50px] pl-10 pr-4 rounded-[20px] bg-[#F0F7FF] border border-[#81C4FA] focus:outline-none focus:ring-2 focus:ring-[#0984E3] focus:border-transparent transition-all appearance-none text-black"
                   required
                   disabled={isLoading}
                 >
@@ -240,7 +240,7 @@ const RegisterForm = () => {
               >
                 {isLoading ? (
                   <div className="flex items-center gap-2">
-                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http:/www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>

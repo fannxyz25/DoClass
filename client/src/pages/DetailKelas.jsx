@@ -40,11 +40,23 @@ const DetailKelas = () => {
   const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
   const [newAnnouncement, setNewAnnouncement] = useState({ judul: '', isi: '' });
   const [broadcastAll, setBroadcastAll] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const [showResetModal, setShowResetModal] = useState(false);
   const [resetOption, setResetOption] = useState('all');
   const [selectedUjianId, setSelectedUjianId] = useState('');
   const [isResetting, setIsResetting] = useState(false);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [modulToDelete, setModulToDelete] = useState(null);
+  const [ujianToDelete, setUjianToDelete] = useState(null);
+  const [showEditUjianModal, setShowEditUjianModal] = useState(false);
+  const [ujianToEdit, setUjianToEdit] = useState(null);
+  const [editUjianForm, setEditUjianForm] = useState({
+    level: "",
+    soal: [{ pertanyaan: "", opsi: ["", "", "", ""], jawaban_benar: "" }],
+    min_score: 70
+  });
 
   useEffect(() => {
     loadKelasDetail();
@@ -217,9 +229,11 @@ const DetailKelas = () => {
         createdBy: user._id
       });
       if (res.data) {
-        alert("Pengumuman berhasil dibuat!");
+        setSuccessMessage('Pengumuman berhasil dibuat!');
+        setShowSuccessPopup(true);
         setShowAnnouncementModal(false);
         setNewAnnouncement({ judul: '', isi: '' });
+        setBroadcastAll(false);
         loadKelasDetail(); // Refresh announcements list
       }
     } catch (error) {
@@ -245,6 +259,80 @@ const DetailKelas = () => {
       alert('Gagal menghapus nilai siswa');
     } finally {
       setIsResetting(false);
+    }
+  };
+
+  const handleDeleteModul = (modulId) => {
+    setModulToDelete(modulId);
+    setShowDeleteConfirmModal(true);
+  };
+
+  const handleDeleteModulConfirm = async () => {
+    try {
+      await axios.delete(`http://localhost:5000/api/modul/${modulToDelete}`);
+      setSuccessMessage('Modul berhasil dihapus!');
+      setShowSuccessPopup(true);
+      setShowDeleteConfirmModal(false);
+      setModulToDelete(null);
+      loadKelasDetail(); // Refresh modules list
+    } catch (error) {
+      console.error("Error deleting modul:", error);
+      alert(error.response?.data?.message || "Gagal menghapus modul!");
+      setShowDeleteConfirmModal(false);
+      setModulToDelete(null);
+    }
+  };
+
+  const handleDeleteUjian = (ujianId) => {
+    setUjianToDelete(ujianId);
+    setShowDeleteConfirmModal(true);
+  };
+
+  const handleDeleteUjianConfirm = async () => {
+    try {
+      await axios.delete(`http://localhost:5000/api/ujian/${ujianToDelete}`);
+      setSuccessMessage('Quiz berhasil dihapus!');
+      setShowSuccessPopup(true);
+      setShowDeleteConfirmModal(false);
+      setUjianToDelete(null);
+      loadUjianList(); // Refresh quiz list
+    } catch (error) {
+      console.error("Error deleting ujian:", error);
+      alert(error.response?.data?.message || "Gagal menghapus quiz!");
+      setShowDeleteConfirmModal(false);
+      setUjianToDelete(null);
+    }
+  };
+
+  const handleEditUjian = (ujian) => {
+    setUjianToEdit(ujian);
+    setEditUjianForm({
+      level: ujian.level,
+      soal: ujian.soal.map(s => ({ ...s })),
+      min_score: ujian.min_score
+    });
+    setShowEditUjianModal(true);
+  };
+
+  const handleUpdateUjian = async (e) => {
+    e.preventDefault();
+    if (!ujianToEdit) return;
+
+    try {
+      await axios.put(`http://localhost:5000/api/ujian/${ujianToEdit._id}`, editUjianForm);
+      setSuccessMessage('Quiz berhasil diperbarui!');
+      setShowSuccessPopup(true);
+      setShowEditUjianModal(false);
+      setUjianToEdit(null);
+      setEditUjianForm({
+        level: "",
+        soal: [{ pertanyaan: "", opsi: ["", "", "", ""], jawaban_benar: "" }],
+        min_score: 70
+      });
+      loadUjianList(); // Refresh quiz list
+    } catch (error) {
+      console.error("Error updating ujian:", error);
+      alert(error.response?.data?.message || "Gagal memperbarui quiz!");
     }
   };
 
@@ -342,18 +430,6 @@ const DetailKelas = () => {
             >
               Pengumuman
             </button>
-            {(user.role === 'siswa' || user.role === 'guru') && (
-              <button
-                className={`px-4 py-2 ${
-                  activeTab === 'progress'
-                    ? 'border-b-2 border-blue-500 text-blue-600'
-                    : 'bg-white text-black'
-                }`}
-                onClick={() => setActiveTab('progress')}
-              >
-                Progress
-              </button>
-            )}
             <button
               className={`px-4 py-2 ${
                 activeTab === 'ujian'
@@ -383,37 +459,56 @@ const DetailKelas = () => {
               <div>
                 {/* Guru: tombol dan tabel hasil ujian */}
                 {user?.role === 'guru' && (
-                  <div className="mt-8">
+                  <div className="mt-8 flex flex-col gap-4">
                     <h3 className="text-lg font-bold mb-2">Daftar Soal Quiz yang Sudah Dibuat</h3>
                     {ujianList.length === 0 ? (
                       <div className="text-gray-500">Belum ada quiz yang dibuat.</div>
                     ) : (
-                      ujianList.map((ujian, idx) => (
-                        <div key={ujian._id || idx} className="mb-6 p-4 border rounded bg-gray-50">
-                          {(ujian.level || ujian.min_score) && (
-                            <div className="font-semibold mb-2 bg-blue-100 text-blue-900 rounded px-2 py-1 inline-block">
-                              {ujian.level && <>Level: {ujian.level}</>} {ujian.min_score && <>Nilai Minimum: {ujian.min_score}</>}
-                            </div>
-                          )}
-                          {ujian.soal.map((soal, sIdx) => (
-                            <div key={sIdx} className="mb-2">
-                              <div className="font-bold text-gray-900 mb-1">{sIdx + 1}. {soal.pertanyaan}</div>
-                              <ul className="ml-4">
-                                {soal.opsi.map((opsi, oIdx) => (
-                                  <li key={oIdx} className={
-                                    opsi === soal.jawaban_benar
-                                      ? "bg-green-100 text-green-800 font-bold rounded px-1"
-                                      : "text-gray-800"
-                                  }>
-                                    {String.fromCharCode(65 + oIdx)}. {opsi}
-                                  </li>
-                                ))}
-                              </ul>
-                              <div className="text-sm text-blue-700">Jawaban Benar: {soal.jawaban_benar}</div>
-                            </div>
-                          ))}
-                        </div>
-                      ))
+                      ujianList.map((ujian, idx) => {
+                        console.log('Rendering quiz for guru:', ujian);
+                        return (
+                          <div key={ujian._id || idx} className="mb-6 p-4 border rounded bg-gray-50">
+                            {(ujian.level || ujian.min_score) && (
+                              <div className="font-semibold mb-2 bg-blue-100 text-blue-900 rounded px-2 py-1 inline-block">
+                                {ujian.level && <>Level: {ujian.level}</>} {ujian.min_score && <>Nilai Minimum: {ujian.min_score}</>}
+                              </div>
+                            )}
+                            {ujian.soal.map((soal, sIdx) => (
+                              <div key={sIdx} className="mb-2">
+                                <div className="font-bold text-gray-900 mb-1">{sIdx + 1}. {soal.pertanyaan}</div>
+                                <ul className="ml-4">
+                                  {soal.opsi.map((opsi, oIdx) => (
+                                    <li key={oIdx} className={
+                                      opsi === soal.jawaban_benar
+                                        ? "bg-green-100 text-green-800 font-bold rounded px-1"
+                                        : "text-gray-800"
+                                    }>
+                                      {String.fromCharCode(65 + oIdx)}. {opsi}
+                                    </li>
+                                  ))}
+                                </ul>
+                                <div className="text-sm text-blue-700">Jawaban Benar: {soal.jawaban_benar}</div>
+                                {user?.role === 'guru' && (
+                                  <div className="flex justify-end gap-2 mt-4">
+                                    <button
+                                      onClick={() => handleEditUjian(ujian)}
+                                      className="bg-white text-black border border-gray-400 px-4 py-2 rounded hover:bg-gray-100 text-sm font-medium"
+                                    >
+                                      Edit Quiz
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteUjian(ujian._id)}
+                                      className="bg-white text-black border border-gray-400 px-4 py-2 rounded hover:bg-gray-100 text-sm font-medium"
+                                    >
+                                      Hapus Quiz
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })
                     )}
                     {/* Tombol dan tabel hasil ujian */}
                     <button
@@ -686,6 +781,16 @@ const DetailKelas = () => {
                               })}
                             </div>
                           </div>
+                          {user.role === 'guru' && (
+                            <div className="flex flex-col items-end space-y-2">
+                              <button
+                                onClick={() => handleDeleteModul(modul._id)}
+                                className="text-red-600 hover:text-red-800 text-sm font-medium"
+                              >
+                                Hapus Modul
+                              </button>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -698,36 +803,6 @@ const DetailKelas = () => {
                     <h3 className="mt-2 text-sm font-medium text-gray-900">Belum ada modul</h3>
                     <p className="mt-1 text-sm text-gray-500">Guru belum menambahkan modul pembelajaran.</p>
                   </div>
-                )}
-              </div>
-            )}
-
-            {activeTab === 'progress' && user.role === 'guru' && (
-              <div>
-                <h3 className="text-lg font-bold mb-4">Daftar Siswa & Level</h3>
-                {kelas.enrolledStudents && kelas.enrolledStudents.length > 0 ? (
-                  <table className="min-w-full border border-gray-300 text-sm bg-white rounded-lg overflow-hidden">
-                    <thead>
-                      <tr className="bg-gray-200 text-gray-900 font-bold">
-                        <th className="border border-gray-300 px-4 py-2">Nama Siswa</th>
-                        <th className="border border-gray-300 px-4 py-2">Level</th>
-                        <th className="border border-gray-300 px-4 py-2">Total Poin</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {kelas.enrolledStudents.map((siswa, idx) => (
-                        <tr key={siswa._id || idx} className="text-center hover:bg-gray-50">
-                          <td className="border border-gray-200 px-4 py-2 text-gray-800">{siswa.username || '-'}</td>
-                          <td className="border border-gray-200 px-4 py-2 text-gray-800">{siswa.current_level || '-'}</td>
-                          <td className="border border-gray-200 px-4 py-2 text-gray-800">
-                            {siswa.points || 0} poin
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <div className="text-center text-gray-500 py-8">Belum ada siswa yang terdaftar di kelas ini.</div>
                 )}
               </div>
             )}
@@ -802,11 +877,13 @@ const DetailKelas = () => {
                 onSubmit={async (e) => {
                   e.preventDefault();
                   try {
-                    await axios.post(`http://localhost:5000/api/kelas/${id}/ujian`, newUjian);
+                    const quizData = { ...newUjian, kelasId: id };
+                    await axios.post(`http://localhost:5000/api/kelas/${id}/ujian`, quizData);
                     setShowUjianModal(false);
                     setNewUjian({ level: "", soal: [{ pertanyaan: '', opsi: ['', '', '', ''], jawaban_benar: '' }], min_score: 70 });
                     loadUjianList();
-                    alert('Quiz berhasil dibuat!');
+                    setSuccessMessage('Quiz berhasil dibuat!');
+                    setShowSuccessPopup(true);
                   } catch (err) {
                     alert('Gagal membuat quiz!');
                   }
@@ -928,7 +1005,7 @@ const DetailKelas = () => {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-black"
+                    className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white"
                   >
                     Simpan Quiz
                   </button>
@@ -973,7 +1050,9 @@ const DetailKelas = () => {
                         setUploadProgress(percentCompleted);
                       }
                     });
-                    alert('Modul berhasil ditambahkan!');
+                    // Replace alert with setting state for pop-up
+                    setSuccessMessage('Modul berhasil ditambahkan!');
+                    setShowSuccessPopup(true);
                     setShowModulForm(false);
                     setModulForm({ judul: '', deskripsi: '', file: null });
                     setUploadProgress(0);
@@ -1032,7 +1111,7 @@ const DetailKelas = () => {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-black"
+                    className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white"
                   >
                     Simpan Modul
                   </button>
@@ -1081,7 +1160,8 @@ const DetailKelas = () => {
                     setNewAnnouncement({ judul: '', isi: '' });
                     setBroadcastAll(false);
                     loadKelasDetail();
-                    alert('Pengumuman berhasil dibuat!');
+                    setSuccessMessage('Pengumuman berhasil dibuat!');
+                    setShowSuccessPopup(true);
                   } catch (err) {
                     alert('Gagal membuat pengumuman!');
                   }
@@ -1135,9 +1215,209 @@ const DetailKelas = () => {
             </div>
           </div>
         )}
+
+        {/* Delete Modul Confirmation Modal */}
+        {showDeleteConfirmModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg w-80 text-center">
+              <h2 className="text-xl font-bold mb-4 text-gray-800">Konfirmasi Hapus Modul</h2>
+              <p className="mb-4 text-gray-700">Anda yakin ingin menghapus modul ini?</p>
+              <div className="flex justify-center space-x-4">
+                <button
+                  onClick={() => setShowDeleteConfirmModal(false)}
+                  className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-800"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleDeleteModulConfirm}
+                  className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white font-semibold"
+                >
+                  Hapus
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Ujian Confirmation Modal */}
+        {showDeleteConfirmModal && ujianToDelete && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg w-80 text-center">
+              <h2 className="text-xl font-bold mb-4 text-gray-800">Konfirmasi Hapus Quiz</h2>
+              <p className="mb-4 text-gray-700">Anda yakin ingin menghapus quiz ini?</p>
+              <div className="flex justify-center space-x-4">
+                <button
+                  onClick={() => setShowDeleteConfirmModal(false)}
+                  className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-800"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleDeleteUjianConfirm}
+                  className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white font-semibold"
+                >
+                  Hapus
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Ujian Modal */}
+        {showEditUjianModal && ujianToEdit && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg w-full max-w-lg relative max-h-[80vh] overflow-y-auto">
+              <button
+                className="absolute top-2 right-2 bg-white text-black hover:bg-gray-100"
+                onClick={() => setShowEditUjianModal(false)}
+              >
+                &times;
+              </button>
+              <h2 className="text-xl font-bold mb-4 text-black">Edit Quiz</h2>
+              <form onSubmit={handleUpdateUjian} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Level Quiz</label>
+                  <input
+                    type="text"
+                    className="input w-full border rounded px-3 py-2 mt-1 bg-white text-black"
+                    placeholder="Contoh: Level 1"
+                    value={editUjianForm.level}
+                    onChange={e => setEditUjianForm({ ...editUjianForm, level: e.target.value })}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Nilai Minimum</label>
+                  <input
+                    type="number"
+                    className="input w-full border rounded px-3 py-2 mt-1 bg-white text-black"
+                    value={editUjianForm.min_score}
+                    onChange={e => setEditUjianForm({ ...editUjianForm, min_score: Number(e.target.value) })}
+                    min={0}
+                    max={100}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Soal</label>
+                  {editUjianForm.soal.map((soal, idx) => (
+                    <div key={idx} className="border rounded p-3 mb-4 bg-white">
+                      <input
+                        type="text"
+                        className="input w-full border rounded px-3 py-2 mb-2 bg-white text-black"
+                        placeholder={`Pertanyaan ${idx + 1}`}
+                        value={soal.pertanyaan}
+                        onChange={e => {
+                          const soalBaru = [...editUjianForm.soal];
+                          soalBaru[idx].pertanyaan = e.target.value;
+                          setEditUjianForm({ ...editUjianForm, soal: soalBaru });
+                        }}
+                        required
+                      />
+                      <div className="grid grid-cols-1 gap-2 mb-2">
+                        {soal.opsi.map((opsi, opsiIdx) => (
+                          <input
+                            key={opsiIdx}
+                            type="text"
+                            className="input w-full border rounded px-3 py-2 bg-white text-black"
+                            placeholder={`Opsi ${String.fromCharCode(65 + opsiIdx)}`}
+                            value={opsi}
+                            onChange={e => {
+                              const soalBaru = [...editUjianForm.soal];
+                              soalBaru[idx].opsi[opsiIdx] = e.target.value;
+                              setEditUjianForm({ ...editUjianForm, soal: soalBaru });
+                            }}
+                            required
+                          />
+                        ))}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Jawaban Benar</label>
+                        <select
+                          className="input w-full border rounded px-3 py-2 mt-1 text-black bg-white"
+                          value={soal.jawaban_benar}
+                          onChange={e => {
+                            const soalBaru = [...editUjianForm.soal];
+                            soalBaru[idx].jawaban_benar = e.target.value;
+                            setEditUjianForm({ ...editUjianForm, soal: soalBaru });
+                          }}
+                          required
+                        >
+                          <option value="">Pilih Jawaban Benar</option>
+                          {soal.opsi.map((opsi, opsiIdx) => (
+                            <option key={opsiIdx} value={opsi}>{opsi || `Opsi ${String.fromCharCode(65 + opsiIdx)}`}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="flex gap-2 mt-2">
+                        {editUjianForm.soal.length > 1 && (
+                          <button
+                            type="button"
+                            className="text-red-600 hover:underline"
+                            onClick={() => {
+                              const soalBaru = editUjianForm.soal.filter((_, i) => i !== idx);
+                              setEditUjianForm({ ...editUjianForm, soal: soalBaru });
+                            }}
+                          >
+                            Hapus Soal
+                          </button>
+                        )}
+                        {idx === editUjianForm.soal.length - 1 && (
+                          <button
+                            type="button"
+                            className="text-blue-600 hover:underline bg-white text-black"
+                            onClick={() => {
+                              setEditUjianForm({
+                                ...editUjianForm,
+                                soal: [...editUjianForm.soal, { pertanyaan: '', opsi: ['', '', '', ''], jawaban_benar: '' }]
+                              });
+                            }}
+                          >
+                            Tambah Soal
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-800"
+                    onClick={() => setShowEditUjianModal(false)}
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    Simpan Perubahan
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {showSuccessPopup && (
+          <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+            <div className="bg-gray-800 p-6 rounded-lg text-white w-80 text-center">
+              <h2 className="text-xl font-bold mb-4">Notifikasi</h2>
+              <p>{successMessage}</p>
+              <button
+                onClick={() => setShowSuccessPopup(false)}
+                className="mt-4 px-4 py-2 rounded bg-blue-500 hover:bg-blue-600"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
 };
 
-export default DetailKelas; 
+export default DetailKelas;

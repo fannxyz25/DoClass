@@ -69,7 +69,7 @@ const Navbar = () => {
             </Link> */}
           </div>
           <div className="flex items-center space-x-4">
-            <span className="text-sm">
+            <span className="text-sm text-black font-sans">
               {currentUser ? 
                 `${currentUser.username} (${currentUser.role}${currentUser.role !== 'guru' && (currentUser.current_level === 'SMK-1' || (currentUser.points !== undefined && currentUser.points === 0)) ? ' | Level 0' : (currentUser.role !== 'guru' && currentUser.current_level ? ' | ' + currentUser.current_level : '')})`
                : ''}

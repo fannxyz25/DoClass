@@ -22,6 +22,8 @@ const GuruKelas = () => {
     min_score: 70
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     if (!user) {
@@ -91,7 +93,8 @@ const GuruKelas = () => {
       console.log('Create kelas response:', res.data);
 
       if (res.data) {
-        alert(res.data.message);
+        setSuccessMessage(res.data.message);
+        setShowSuccessPopup(true);
         setShowCreateModal(false);
         await loadKelas(); // Reload daftar kelas
         setNewKelas({ nama: "" });
@@ -157,7 +160,8 @@ const GuruKelas = () => {
         if (response.data) {
           setShowModulModal(false);
           setNewModul({ judul: "", isi: "", kelasId: "", file: null });
-          alert("Modul berhasil ditambahkan!");
+          setSuccessMessage("Modul berhasil ditambahkan!");
+          setShowSuccessPopup(true);
         }
       } catch (error) {
         console.error('Network error details:', {
@@ -183,7 +187,8 @@ const GuruKelas = () => {
         soal: [{ pertanyaan: "", opsi: ["", "", "", ""], jawaban_benar: "" }],
         min_score: 70
       });
-      alert("Ujian berhasil dibuat!");
+      setSuccessMessage("Ujian berhasil dibuat!");
+      setShowSuccessPopup(true);
     } catch (error) {
       console.error("Error creating ujian:", error);
       alert("Gagal membuat ujian!");
@@ -255,16 +260,16 @@ const GuruKelas = () => {
                 <input
                   type="text"
                   placeholder="Nama Kelas"
-                  className="input mb-2 w-full"
+                  className="input mb-2 w-full bg-white text-black"
                   value={newKelas.nama}
                   onChange={(e) => setNewKelas({ ...newKelas, nama: e.target.value.trim() })}
                   disabled={isLoading}
                 />
                 <div className="flex justify-end space-x-2">
                   <button
+                    type="button"
                     onClick={() => setShowCreateModal(false)}
-                    className="px-4 py-2 border rounded hover:bg-gray-100 disabled:opacity-50"
-                    disabled={isLoading}
+                    className="px-4 py-2 border rounded bg-red-600 text-white hover:bg-red-700"
                   >
                     Batal
                   </button>
@@ -467,6 +472,22 @@ const GuruKelas = () => {
           )}
         </div>
       </main>
+
+      {/* Success Pop-up */}
+      {showSuccessPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+          <div className="bg-gray-800 p-6 rounded-lg text-white w-80 text-center">
+            <h2 className="text-xl font-bold mb-4">Notifikasi</h2>
+            <p>{successMessage}</p>
+            <button
+              onClick={() => setShowSuccessPopup(false)}
+              className="mt-4 px-4 py-2 rounded bg-blue-500 hover:bg-blue-600"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
